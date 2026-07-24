@@ -2,6 +2,8 @@
 
 ## Unreleased code
 
+The disclaimer model placeholder is now `{{model}}`, matching the `{{...}}` syntax used everywhere else in the plugin. The legacy `[[model]]` form still works, so existing disclaimers are unaffected.
+
 Thanks to Richard Aljaste for a fix to an issue with translating the disclaimer language https://github.com/marcusgreen/moodle-qtype_aitext/pull/73
 
 
