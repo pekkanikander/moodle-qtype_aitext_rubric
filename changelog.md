@@ -1,5 +1,10 @@
 ### Moodle AIText question type
 
+## Unreleased code
+
+Thanks to Richard Aljaste for a fix to an issue with translating the disclaimer language https://github.com/marcusgreen/moodle-qtype_aitext/pull/73
+
+
 ## Release 2.03 Jul 2026
 
 Sample responses are now XML-escaped on export. Any &, < or > in the sample response text previously produced invalid XML that failed to re-import.
