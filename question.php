@@ -61,6 +61,13 @@ class qtype_aitext_question extends question_graded_automatically {
      */
     public $model;
 
+    /**
+     * Model the AI backend actually used for the most recent request,
+     * as reported by the backend/provider. Null until perform_request() runs.
+     * @var string|null
+     */
+    public $modelused = null;
+
 
     /**
      * Options including from sampleanswers table
@@ -241,7 +248,9 @@ class qtype_aitext_question extends question_graded_automatically {
      * @param string $purpose
      */
     public function perform_request(string $prompt, string $purpose = 'feedback'): string {
+        $this->modelused = null;
         if (defined('BEHAT_SITE_RUNNING') || (defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
+            $this->modelused = 'test';
             return "AI Feedback";
         }
         $contextid = $this->get_contextid_for_ai_request();
@@ -258,6 +267,7 @@ class qtype_aitext_question extends question_graded_automatically {
                     $llmresponse->get_debuginfo()
                 );
             }
+            $this->modelused = $llmresponse->get_modelinfo();
             return $llmresponse->get_content();
         } else if ($backend == 'core_ai_subsystem') {
             global $USER;
@@ -281,11 +291,13 @@ class qtype_aitext_question extends question_graded_automatically {
                     throw new moodle_exception('err_retrievingfeedback', 'qtype_aitext');
                 }
             }
+            $this->modelused = $llmresponse->get_model_used();
             return $responsedata['generatedcontent'];
         } else if ($backend == 'tool_aimanager') {
             if (class_exists('\tool_aiconnect\ai\ai')) {
                 $ai = new tool_aiconnect\ai\ai();
                 $llmresponse = $ai->prompt_completion($prompt);
+                $this->modelused = $llmresponse['response']['model'] ?? null;
                 return $llmresponse['response']['choices'][0]['message']['content'];
             } else {
                 throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext', '');
@@ -538,7 +550,17 @@ class qtype_aitext_question extends question_graded_automatically {
         $contentobject->feedback = str_replace('\\\\', '\\', $contentobject->feedback);
         $contentobject->feedback = str_replace('\\', '\\\\', $contentobject->feedback);
         $contentobject->feedback = format_text($contentobject->feedback, FORMAT_MARKDOWN, ['para' => false]);
-        $contentobject->feedback .= ' ' . $this->llm_translate($disclaimer);
+        // Capture the model before translating: llm_translate() may itself issue a
+        // perform_request('translate') which would overwrite $this->modelused with the
+        // translation model. Read it here so {{model}} reflects the feedback model.
+        // Use ?: rather than ?? so an empty string from a backend also falls back to
+        // the configured model rather than rendering a blank placeholder.
+        $model = $this->modelused ?: ($this->model ?: '');
+        $disclaimer = $this->llm_translate($disclaimer);
+        // Replace {{model}} with the model the backend actually used (falls back to the configured model).
+        // The legacy [[model]] form is still honoured for disclaimers configured before the rename.
+        $disclaimer = str_replace(['{{model}}', '[[model]]'], $model, $disclaimer);
+        $contentobject->feedback .= ' ' . $disclaimer;
 
         return $contentobject;
     }

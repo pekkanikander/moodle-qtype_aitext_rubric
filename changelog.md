@@ -18,6 +18,8 @@ Added test fixtures (small English, Maths, Biology and ICT quizzes).
 
 Thanks to Paola Maneggia and the ByCS team for the behaviour rework improvements, extensive testing and positive feedback.
 
+The disclaimer model placeholder is now `{{model}}`, matching the `{{...}}` syntax used everywhere else in the plugin. The legacy `[[model]]` form still works, so existing disclaimers are unaffected.
+
 Thanks to Richard Aljaste for a fix to an issue with translating the disclaimer language https://github.com/marcusgreen/moodle-qtype_aitext/pull/73
 
 Thanks to Marina Glancy for MDLShield which scans moodle plugins for security issues.
