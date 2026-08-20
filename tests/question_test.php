@@ -317,6 +317,70 @@ final class question_test extends \advanced_testcase {
     }
 
     /**
+     * The disclaimer {{model}} (and legacy [[model]]) placeholder is replaced with the
+     * model the backend actually used, falling back to the configured model.
+     *
+     * @covers ::process_feedback()
+     * @dataProvider model_placeholder_provider
+     * @param string $disclaimer The configured disclaimer text containing a placeholder.
+     * @param string|null $modelused The model reported by the backend (null if none).
+     * @param string $expecteddisclaimer The disclaimer expected after substitution.
+     */
+    public function test_process_feedback_model_placeholder(
+        string $disclaimer,
+        ?string $modelused,
+        string $expecteddisclaimer
+    ): void {
+        $this->resetAfterTest();
+        set_config('disclaimer', $disclaimer, 'qtype_aitext');
+        set_config('translatepostfix', false, 'qtype_aitext');
+
+        $aitext = qtype_aitext_test_helper::make_aitext_question(['model' => 'llama3']);
+        // Simulate what perform_request() records after talking to the backend.
+        $aitext->modelused = $modelused;
+
+        $processedfeedback = $aitext->process_feedback('{"feedback": "Good job", "marks": 0}');
+
+        $expectedfeedback = format_text('Good job', FORMAT_MARKDOWN) . ' ' . $expecteddisclaimer;
+        $this->assertEquals($expectedfeedback, $processedfeedback->feedback);
+    }
+
+    /**
+     * Data provider for test_process_feedback_model_placeholder().
+     *
+     * @return array of test cases
+     */
+    public static function model_placeholder_provider(): array {
+        return [
+            'backend model used' => [
+                'disclaimer' => '(Response by {{model}})',
+                'modelused' => 'gpt-4o',
+                'expecteddisclaimer' => '(Response by gpt-4o)',
+            ],
+            'falls back to configured model when backend reports none' => [
+                'disclaimer' => '(Response by {{model}})',
+                'modelused' => null,
+                'expecteddisclaimer' => '(Response by llama3)',
+            ],
+            'falls back when backend reports empty string' => [
+                'disclaimer' => '(Response by {{model}})',
+                'modelused' => '',
+                'expecteddisclaimer' => '(Response by llama3)',
+            ],
+            'legacy double-bracket form still honoured' => [
+                'disclaimer' => '(Response by [[model]])',
+                'modelused' => 'gpt-4o',
+                'expecteddisclaimer' => '(Response by gpt-4o)',
+            ],
+            'disclaimer without placeholder is unchanged' => [
+                'disclaimer' => '(AI generated)',
+                'modelused' => 'gpt-4o',
+                'expecteddisclaimer' => '(AI generated)',
+            ],
+        ];
+    }
+
+    /**
      * Data provider for test_process_feedback().
      *
      * Provides various generated JSON strings by an external LLM.

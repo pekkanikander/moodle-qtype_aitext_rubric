@@ -465,10 +465,15 @@ class qtype_aitext_question extends question_graded_automatically_with_countback
         $contentobject->feedback = str_replace('\\\\', '\\', $contentobject->feedback);
         $contentobject->feedback = str_replace('\\', '\\\\', $contentobject->feedback);
         $contentobject->feedback = format_text($contentobject->feedback, FORMAT_MARKDOWN, ['para' => false]);
+        // Capture the model before translating: llm_translate() may itself issue a
+        // perform_request('translate') which would overwrite $this->modelused with the
+        // translation model. Read it here so {{model}} reflects the feedback model.
+        // Use ?: rather than ?? so an empty string from a backend also falls back to
+        // the configured model rather than rendering a blank placeholder.
+        $model = $this->modelused ?: ($this->model ?: '');
         $disclaimer = $this->llm_translate($disclaimer);
         // Replace {{model}} with the model the backend actually used (falls back to the configured model).
         // The legacy [[model]] form is still honoured for disclaimers configured before the rename.
-        $model = $this->modelused ?? $this->model ?? '';
         $disclaimer = str_replace(['{{model}}', '[[model]]'], $model, $disclaimer);
         $contentobject->feedback .= ' ' . $disclaimer;
 
