@@ -129,6 +129,21 @@ class qtype_aitext_question extends question_graded_automatically {
      */
     public $rubric;
 
+    /**
+     * Skeleton (HTML) shown above the answer box while answering, when the
+     * effective scaffold level is 1. Purely presentational: the prompt,
+     * rubric and grading are unaffected.
+     * @var string|null
+     */
+    public $scaffold;
+
+    /**
+     * Scaffold-then-fade level: 1 = skeleton shown, 2 = plain box
+     * (default, upstream behaviour); 0 reserved for a future full scaffold.
+     * @var int
+     */
+    public $scaffoldlevel;
+
     /** @var int */
     public $defaultmark;
 
@@ -156,6 +171,29 @@ class qtype_aitext_question extends question_graded_automatically {
 
     /** @var stdClass|null Validated rubric grading result from the last grade_response() call. */
     public $lastrubricresult = null;
+
+    /**
+     * The scaffold level in effect for this display: a per-quiz override
+     * from qtype_aitext_quiz when the question is shown inside a quiz,
+     * otherwise the question's own scaffoldlevel.
+     *
+     * @param question_display_options $options the options being rendered with.
+     * @return int
+     */
+    public function effective_scaffold_level(question_display_options $options): int {
+        global $DB;
+        if ($options->context instanceof context_module) {
+            // Wrong-module cmids (e.g. a question bank preview) return false.
+            $cm = get_coursemodule_from_id('quiz', $options->context->instanceid);
+            if ($cm) {
+                $override = $DB->get_field('qtype_aitext_quiz', 'scaffoldlevel', ['quizid' => $cm->instance]);
+                if ($override !== false) {
+                    return (int) $override;
+                }
+            }
+        }
+        return (int) ($this->scaffoldlevel ?? 2);
+    }
 
     /**
      * Choose the question behaviour to use for this question attempt.

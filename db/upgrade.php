@@ -142,5 +142,32 @@ function xmldb_qtype_aitext_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026082700, 'qtype', 'aitext');
     }
 
+    if ($oldversion < 2026082702) {
+        // Define fields scaffold and scaffoldlevel to be added to qtype_aitext.
+        $table = new xmldb_table('qtype_aitext');
+        $field = new xmldb_field('scaffold', XMLDB_TYPE_TEXT, null, null, null, null, null, 'rubric');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('scaffoldlevel', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '2', 'scaffold');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table qtype_aitext_quiz for per-quiz scaffold level overrides.
+        $table = new xmldb_table('qtype_aitext_quiz');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('quizid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('scaffoldlevel', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('quizid', XMLDB_KEY_FOREIGN_UNIQUE, ['quizid'], 'quiz', ['id']);
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Aitext savepoint reached.
+        upgrade_plugin_savepoint(true, 2026082702, 'qtype', 'aitext');
+    }
+
     return true;
 }
