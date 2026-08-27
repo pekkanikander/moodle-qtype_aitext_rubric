@@ -196,6 +196,14 @@ class qtype_aitext_renderer extends qtype_renderer {
         // Get data written in the question.php grade_response method.
         $comment = $qa->get_last_behaviour_var('_comment');
 
+        // Feature 4 (flag for teacher review) lives in the companion
+        // local_aitextflags plugin; without it this renders nothing.
+        $flagbutton = '';
+        if (!empty($comment)) {
+            $flagbutton = component_class_callback('\\local_aitextflags\\api',
+                'render_flag_button', [$qa, $options], '');
+        }
+
         if ($this->page->pagetype === 'question-bank-previewquestion-preview') {
             // Ensure $comment is an array and has content.
             if (!empty($comment)) {
@@ -214,15 +222,18 @@ class qtype_aitext_renderer extends qtype_renderer {
                 $showprompt .= '<div id="fullprompt" class="hidden">' . $prompt . '</div>';
 
                 // Store the modified feedback in a variable.
-                $feedback = $comment . $showprompt;
+                $feedback = $comment . $flagbutton . $showprompt;
                 return $feedback;
             }
 
             // Return the comment if it exists, otherwise empty string.
-            return $comment ?? '';
+            return ($comment ?? '') . $flagbutton;
         }
 
-        return '';
+        // Outside preview the comment itself is shown by the behaviour
+        // renderer (manual_comment_view); only the flag affordance goes
+        // into the feedback area.
+        return $flagbutton;
     }
 
     /**
