@@ -1,0 +1,85 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template qtype_aitext/rubric_feedback
+
+    Criterion-referenced AI feedback, rendered at grading time.
+
+    The structure is deliberately fixed and identical for every question.
+    All strings from the model (comment, nextstep, evidence) are rendered
+    with escaping tags — model output is never trusted as HTML.
+    The display mode (none/coarse/fine) arrives precomputed as the
+    showbadge/showpoints/showtotal booleans.
+
+    Context (see qtype_aitext_question::export_rubric_feedback()):
+    {
+        "banner": "The assessment below was made by AI (claude-sonnet-4-5) and can be wrong.",
+        "criteria": [
+            {
+                "title": "Noste",
+                "descriptor": "Noste mainitaan, mutta sen rooli jää epäselväksi.",
+                "showbadge": true, "badge": "partial", "badgelabel": "osittain",
+                "showpoints": false, "points": 1, "max": 2,
+                "hasevidence": true, "evidence": ["veden noste kannattelee"],
+                "comment": "Hyvä alku — noste mainitaan.",
+                "next": "Vastaus selittää, että kappale kelluu, kun noste kannattelee sen painon."
+            }
+        ],
+        "evidencelabel": "Perustuu kohtiin:",
+        "ailabel": "AI:",
+        "nextlabel": "Seuraavaksi:",
+        "nextstep": "Selitä myös teräksen uppoaminen.",
+        "nextsteplabel": "Tärkein parannus:",
+        "showtotal": true, "points": 3, "maxpoints": 5,
+        "totallabel": "Pisteet:"
+    }
+}}
+<div class="qtype_aitext-rubric">
+    <div class="qtype_aitext-rubric-banner">{{banner}}</div>
+    {{#criteria}}
+    <div class="qtype_aitext-rubric-criterion">
+        <div class="qtype_aitext-rubric-head">
+            <span class="qtype_aitext-rubric-title">{{title}}</span>
+            {{#showbadge}}<span class="qtype_aitext-rubric-badge qtype_aitext-rubric-badge-{{badge}}">{{badgelabel}}</span>{{/showbadge}}
+            {{#showpoints}}<span class="qtype_aitext-rubric-points">{{points}} / {{max}}</span>{{/showpoints}}
+        </div>
+        <div class="qtype_aitext-rubric-descriptor">{{descriptor}}</div>
+        {{#hasevidence}}
+        <div class="qtype_aitext-rubric-evidence">
+            <span class="qtype_aitext-rubric-label">{{evidencelabel}}</span>
+            <ul>
+                {{#evidence}}
+                <li>&#8220;{{.}}&#8221;</li>
+                {{/evidence}}
+            </ul>
+        </div>
+        {{/hasevidence}}
+        {{#comment}}
+        <div class="qtype_aitext-rubric-comment"><span class="qtype_aitext-rubric-label">{{ailabel}}</span> {{comment}}</div>
+        {{/comment}}
+        {{#next}}
+        <div class="qtype_aitext-rubric-next"><span class="qtype_aitext-rubric-label">{{nextlabel}}</span> {{next}}</div>
+        {{/next}}
+    </div>
+    {{/criteria}}
+    {{#nextstep}}
+    <div class="qtype_aitext-rubric-nextstep"><span class="qtype_aitext-rubric-label">{{nextsteplabel}}</span> {{nextstep}}</div>
+    {{/nextstep}}
+    {{#showtotal}}
+    <div class="qtype_aitext-rubric-total">{{totallabel}} {{points}} / {{maxpoints}}</div>
+    {{/showtotal}}
+</div>

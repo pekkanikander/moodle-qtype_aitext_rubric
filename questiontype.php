@@ -126,6 +126,7 @@ class qtype_aitext extends question_type {
         $options->spellcheck = !empty($formdata->spellcheck);
         $options->aiprompt = $formdata->aiprompt;
         $options->markscheme = $formdata->markscheme;
+        $options->rubric = trim($formdata->rubric ?? '');
         $options->model = trim($formdata->model);
         $options->responseformat = $formdata->responseformat;
         $options->responsefieldlines = $formdata->responsefieldlines;
@@ -184,6 +185,7 @@ class qtype_aitext extends question_type {
         $question->responsetemplateformat = $questiondata->options->responsetemplateformat;
         $question->aiprompt = $questiondata->options->aiprompt;
         $question->markscheme = $questiondata->options->markscheme;
+        $question->rubric = $questiondata->options->rubric ?? '';
         parent::get_question_options($question);
         $question->sampleresponses = $this->get_sampleresponses($question);
 
@@ -312,6 +314,7 @@ class qtype_aitext extends question_type {
             'responsetemplateformat',
             'aiprompt',
             'markscheme',
+            'rubric',
             'model',
             'spellcheck',
         ];

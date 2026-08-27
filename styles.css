@@ -57,3 +57,72 @@
     color: green;
     font-weight: 800;
 }
+
+/* Criterion-referenced rubric feedback (templates/rubric_feedback.mustache). */
+.qtype_aitext-rubric {
+    margin: 0.5em 0;
+}
+
+.qtype_aitext-rubric-banner {
+    padding: 0.4em 0.6em;
+    margin-bottom: 0.8em;
+    border-left: 3px solid #8a6d3b;
+    background-color: #fcf8e3;
+    color: #6a5426;
+    font-size: 0.9em;
+}
+
+.qtype_aitext-rubric-criterion {
+    margin-bottom: 0.9em;
+}
+
+.qtype_aitext-rubric-title {
+    font-weight: bold;
+}
+
+.qtype_aitext-rubric-badge {
+    display: inline-block;
+    margin-left: 0.5em;
+    padding: 0.1em 0.5em;
+    border-radius: 0.6em;
+    font-size: 0.85em;
+}
+
+.qtype_aitext-rubric-badge-met {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.qtype_aitext-rubric-badge-partial {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+}
+
+.qtype_aitext-rubric-badge-missed {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+.qtype_aitext-rubric-points {
+    margin-left: 0.5em;
+    font-variant-numeric: tabular-nums;
+}
+
+.qtype_aitext-rubric-label {
+    font-weight: bold;
+}
+
+.qtype_aitext-rubric-evidence ul {
+    margin: 0.1em 0 0.3em;
+}
+
+.qtype_aitext-rubric-comment {
+    font-style: italic;
+}
+
+.qtype_aitext-rubric-nextstep,
+.qtype_aitext-rubric-total {
+    margin-top: 0.6em;
+    padding-top: 0.4em;
+    border-top: 1px solid #ddd;
+}
