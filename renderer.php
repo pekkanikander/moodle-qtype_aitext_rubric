@@ -119,6 +119,18 @@ class qtype_aitext_renderer extends qtype_renderer {
         );
 
         $result .= html_writer::start_tag('div', ['class' => 'ablock']);
+
+        // Scaffold level 1: show the authored skeleton above the answer box
+        // while answering. Presentational only; grading is unaffected.
+        if (empty($options->readonly) && trim((string) $question->scaffold) !== ''
+                && $question->effective_scaffold_level($options) == 1) {
+            $result .= html_writer::tag(
+                'div',
+                format_text($question->scaffold, FORMAT_HTML, ['context' => $options->context]),
+                ['class' => 'aitext-scaffold alert alert-secondary']
+            );
+        }
+
         $result .= html_writer::tag('div', $answer, ['class' => 'answer']);
 
         // If there is a response and min/max word limit is set in the form then check the response word count.

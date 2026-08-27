@@ -234,6 +234,8 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
             $defaultoptions->maxbytes = 0;
             $defaultoptions->spellcheck = 0;
             $defaultoptions->rubric = '';
+            $defaultoptions->scaffold = '';
+            $defaultoptions->scaffoldlevel = 2;
             $DB->insert_record('qtype_aitext', $defaultoptions);
         }
     }

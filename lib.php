@@ -41,3 +41,82 @@ function qtype_aitext_pluginfile($course, $cm, $context, $filearea, $args, $forc
     require_once($CFG->libdir . '/questionlib.php');
     question_pluginfile($course, $context, 'qtype_aitext', $filearea, $args, $forcedownload, $options);
 }
+
+/**
+ * Add a per-quiz scaffold level override selector to the quiz settings form.
+ *
+ * @param moodleform_mod $formwrapper the module settings form wrapper
+ * @param MoodleQuickForm $mform the wrapped form
+ * @return void
+ */
+function qtype_aitext_coursemodule_standard_elements($formwrapper, $mform) {
+    global $DB;
+    $current = $formwrapper->get_current();
+    if ($current->modulename !== 'quiz') {
+        return;
+    }
+    $mform->addElement('header', 'qtypeaitextheader', get_string('quizsettingsheader', 'qtype_aitext'));
+    // 0 here means "no override", not the reserved scaffold level 0.
+    $mform->addElement(
+        'select',
+        'qtypeaitextscaffoldlevel',
+        get_string('scaffoldlevel', 'qtype_aitext'),
+        [
+            0 => get_string('scaffoldquizdefault', 'qtype_aitext'),
+            1 => get_string('scaffoldlevel1', 'qtype_aitext'),
+            2 => get_string('scaffoldlevel2', 'qtype_aitext'),
+        ]
+    );
+    $mform->addHelpButton('qtypeaitextscaffoldlevel', 'scaffoldlevel', 'qtype_aitext');
+    if (!empty($current->instance)) {
+        $override = $DB->get_field('qtype_aitext_quiz', 'scaffoldlevel', ['quizid' => $current->instance]);
+        if ($override !== false) {
+            $mform->setDefault('qtypeaitextscaffoldlevel', (int) $override);
+        }
+    }
+}
+
+/**
+ * Persist the per-quiz scaffold level override from the quiz settings form.
+ *
+ * @param stdClass $moduleinfo the saved module info
+ * @param stdClass $course the course
+ * @return stdClass the module info, unchanged
+ */
+function qtype_aitext_coursemodule_edit_post_actions($moduleinfo, $course) {
+    global $DB;
+    if ($moduleinfo->modulename !== 'quiz' || !isset($moduleinfo->qtypeaitextscaffoldlevel)) {
+        return $moduleinfo;
+    }
+    $level = (int) $moduleinfo->qtypeaitextscaffoldlevel;
+    $existing = $DB->get_record('qtype_aitext_quiz', ['quizid' => $moduleinfo->instance]);
+    if ($level === 0) {
+        if ($existing) {
+            $DB->delete_records('qtype_aitext_quiz', ['id' => $existing->id]);
+        }
+    } else if ($existing) {
+        if ((int) $existing->scaffoldlevel !== $level) {
+            $existing->scaffoldlevel = $level;
+            $DB->update_record('qtype_aitext_quiz', $existing);
+        }
+    } else {
+        $DB->insert_record('qtype_aitext_quiz', (object) [
+            'quizid' => $moduleinfo->instance,
+            'scaffoldlevel' => $level,
+        ]);
+    }
+    return $moduleinfo;
+}
+
+/**
+ * Delete the scaffold level override of a quiz being deleted.
+ *
+ * @param stdClass $cm the course module being deleted
+ * @return void
+ */
+function qtype_aitext_pre_course_module_delete($cm) {
+    global $DB;
+    if ($cm->modname === 'quiz') {
+        $DB->delete_records('qtype_aitext_quiz', ['quizid' => $cm->instance]);
+    }
+}

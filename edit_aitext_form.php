@@ -99,6 +99,29 @@ class qtype_aitext_edit_form extends question_edit_form {
         );
         $mform->setType('rubric', PARAM_RAW);
         $mform->addHelpButton('rubric', 'rubric', 'qtype_aitext');
+
+        // Scaffold-then-fade: an optional skeleton shown above the answer box.
+        $mform->addElement(
+            'select',
+            'scaffoldlevel',
+            get_string('scaffoldlevel', 'qtype_aitext'),
+            [
+                2 => get_string('scaffoldlevel2', 'qtype_aitext'),
+                1 => get_string('scaffoldlevel1', 'qtype_aitext'),
+            ]
+        );
+        $mform->setDefault('scaffoldlevel', 2);
+        $mform->addHelpButton('scaffoldlevel', 'scaffoldlevel', 'qtype_aitext');
+        $mform->addElement(
+            'textarea',
+            'scaffold',
+            get_string('scaffold', 'qtype_aitext'),
+            ['rows' => 8, 'size' => 30]
+        );
+        $mform->setType('scaffold', PARAM_RAW);
+        $mform->addHelpButton('scaffold', 'scaffold', 'qtype_aitext');
+        $mform->hideIf('scaffold', 'scaffoldlevel', 'eq', '2');
+
         $models = explode(",", get_config('tool_aiconnect', 'model'));
         if (count($models) > 1) {
             $models = array_combine($models, $models);
@@ -281,6 +304,8 @@ class qtype_aitext_edit_form extends question_edit_form {
         $question->maxwordlimit = $question->options->maxwordlimit;
         $question->aiprompt = $question->options->aiprompt;
         $question->rubric = $question->options->rubric ?? '';
+        $question->scaffold = $question->options->scaffold ?? '';
+        $question->scaffoldlevel = $question->options->scaffoldlevel ?? 2;
         $question->spellcheck = $question->options->spellcheck;
         // Make the count start from 0 like the repeat array elements.
         $question->sampleresponses = [];

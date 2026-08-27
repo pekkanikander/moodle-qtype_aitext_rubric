@@ -127,6 +127,10 @@ class qtype_aitext extends question_type {
         $options->aiprompt = $formdata->aiprompt;
         $options->markscheme = $formdata->markscheme;
         $options->rubric = trim($formdata->rubric ?? '');
+        $options->scaffold = trim($formdata->scaffold ?? '');
+        // Only levels 1 and 2 are implemented; anything else falls back to 2.
+        $scaffoldlevel = (int) ($formdata->scaffoldlevel ?? 2);
+        $options->scaffoldlevel = in_array($scaffoldlevel, [1, 2]) ? $scaffoldlevel : 2;
         $options->model = trim($formdata->model);
         $options->responseformat = $formdata->responseformat;
         $options->responsefieldlines = $formdata->responsefieldlines;
@@ -155,7 +159,7 @@ class qtype_aitext extends question_type {
 
         $DB->update_record('qtype_aitext', $options);
         $DB->delete_records('qtype_aitext_sampleresponses', ['question' => $formdata->id]);
-        foreach ($formdata->sampleresponses as $sr) {
+        foreach ($formdata->sampleresponses ?? [] as $sr) {
             if (trim((string) $sr) === '') {
                 continue;
             }
@@ -186,6 +190,8 @@ class qtype_aitext extends question_type {
         $question->aiprompt = $questiondata->options->aiprompt;
         $question->markscheme = $questiondata->options->markscheme;
         $question->rubric = $questiondata->options->rubric ?? '';
+        $question->scaffold = $questiondata->options->scaffold ?? '';
+        $question->scaffoldlevel = (int) ($questiondata->options->scaffoldlevel ?? 2);
         parent::get_question_options($question);
         $question->sampleresponses = $this->get_sampleresponses($question);
 
@@ -315,6 +321,8 @@ class qtype_aitext extends question_type {
             'aiprompt',
             'markscheme',
             'rubric',
+            'scaffold',
+            'scaffoldlevel',
             'model',
             'spellcheck',
         ];
