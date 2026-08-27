@@ -128,5 +128,19 @@ function xmldb_qtype_aitext_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026072800, 'qtype', 'aitext');
     }
 
+    if ($oldversion < 2026082700) {
+        // Define field rubric to be added to qtype_aitext.
+        $table = new xmldb_table('qtype_aitext');
+        $field = new xmldb_field('rubric', XMLDB_TYPE_TEXT, null, null, null, null, null, 'spellcheck');
+
+        // Conditionally launch add field rubric.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Aitext savepoint reached.
+        upgrade_plugin_savepoint(true, 2026082700, 'qtype', 'aitext');
+    }
+
     return true;
 }

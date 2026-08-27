@@ -89,6 +89,16 @@ class qtype_aitext_edit_form extends question_edit_form {
         if (get_config('qtype_aitext', 'markprompt_required') == 1) {
             $mform->addRule('markscheme', get_string('markschememissing', 'qtype_aitext'), 'required');
         }
+
+        // Criterion-referenced rubric (JSON). Mutually exclusive with the mark scheme.
+        $mform->addElement(
+            'textarea',
+            'rubric',
+            get_string('rubric', 'qtype_aitext'),
+            ['rows' => 12, 'size' => 30]
+        );
+        $mform->setType('rubric', PARAM_RAW);
+        $mform->addHelpButton('rubric', 'rubric', 'qtype_aitext');
         $models = explode(",", get_config('tool_aiconnect', 'model'));
         if (count($models) > 1) {
             $models = array_combine($models, $models);
@@ -270,6 +280,7 @@ class qtype_aitext_edit_form extends question_edit_form {
         $question->maxwordenabled = $question->options->maxwordlimit ? 1 : 0;
         $question->maxwordlimit = $question->options->maxwordlimit;
         $question->aiprompt = $question->options->aiprompt;
+        $question->rubric = $question->options->rubric ?? '';
         $question->spellcheck = $question->options->spellcheck;
         // Make the count start from 0 like the repeat array elements.
         $question->sampleresponses = [];
@@ -310,6 +321,17 @@ class qtype_aitext_edit_form extends question_edit_form {
      */
     public function validation($fromform, $data) {
         $errors = parent::validation($fromform, $data);
+
+        if (trim($fromform['rubric'] ?? '') !== '') {
+            try {
+                \qtype_aitext\local\rubric::parse($fromform['rubric']);
+            } catch (\InvalidArgumentException $e) {
+                $errors['rubric'] = get_string('err_rubricinvalid', 'qtype_aitext', $e->getMessage());
+            }
+            if (trim($fromform['markscheme'] ?? '') !== '') {
+                $errors['rubric'] = get_string('err_rubricandmarkscheme', 'qtype_aitext');
+            }
+        }
 
         if (isset($fromform['minwordenabled'])) {
             if (!is_numeric($fromform['minwordlimit'])) {

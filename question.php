@@ -121,6 +121,14 @@ class qtype_aitext_question extends question_graded_automatically {
      */
     public $markscheme;
 
+    /**
+     * Criterion-referenced rubric as JSON, or empty/null for upstream
+     * behaviour. When present, grading goes through
+     * \qtype_aitext\local\rubric instead of the markscheme path.
+     * @var string|null
+     */
+    public $rubric;
+
     /** @var int */
     public $defaultmark;
 
@@ -145,6 +153,9 @@ class qtype_aitext_question extends question_graded_automatically {
 
     /** @var string|null Cached spellcheck response from the last grade_response() call. */
     public $lastspellcheckresponse = null;
+
+    /** @var stdClass|null Validated rubric grading result from the last grade_response() call. */
+    public $lastrubricresult = null;
 
     /**
      * Choose the question behaviour to use for this question attempt.
@@ -199,6 +210,7 @@ class qtype_aitext_question extends question_graded_automatically {
         $this->lastaicomment = null;
         $this->lastaiprompt = null;
         $this->lastspellcheckresponse = null;
+        $this->lastrubricresult = null;
         $this->attemptcontextid = null;
         // Resolve the usage context from the step.
         $this->resolve_attempt_context($step);
@@ -333,6 +345,7 @@ class qtype_aitext_question extends question_graded_automatically {
         $this->lastaicomment = null;
         $this->lastaiprompt = null;
         $this->lastspellcheckresponse = null;
+        $this->lastrubricresult = null;
 
         if (!$this->is_complete_response($response)) {
             return [0, question_state::$needsgrading];
@@ -346,6 +359,10 @@ class qtype_aitext_question extends question_graded_automatically {
                 // Spellcheck failure is non-fatal — keep going without it.
                 $this->lastspellcheckresponse = null;
             }
+        }
+
+        if (!empty($this->rubric)) {
+            return $this->grade_response_with_rubric($response);
         }
 
         $fullaiprompt = $this->build_full_ai_prompt(
@@ -376,6 +393,131 @@ class qtype_aitext_question extends question_graded_automatically {
             $fraction = (float) $contentobject->marks / $this->defaultmark;
         }
         return [$fraction, question_state::graded_state_for_fraction($fraction)];
+    }
+
+    /**
+     * Grade a response against the question's criterion rubric.
+     *
+     * The mark is sum(level) / sum(max level), computed in PHP; the model
+     * only selects level indices. Any failure — AI unavailable, reply not
+     * parseable, schema violation, fabricated evidence — fails closed to
+     * the needs-grading state with a neutral message. Raw model text is
+     * never shown to the student.
+     *
+     * On success the feedback is rendered here, at grading time, with the
+     * fixed rubric_feedback template: the behaviour adapters persist
+     * $this->lastaicomment as the '_comment' behaviour variable, which is
+     * the only channel through which feedback reaches the student, so the
+     * HTML must exist before the grading step is saved.
+     *
+     * @param array $response the student response, as passed to grade_response().
+     * @return array [fraction, question_state]
+     */
+    private function grade_response_with_rubric(array $response): array {
+        global $OUTPUT;
+
+        try {
+            $rubric = \qtype_aitext\local\rubric::parse($this->rubric);
+        } catch (\InvalidArgumentException $e) {
+            // Broken authored rubric; should be impossible past form/compiler validation.
+            debugging('Invalid rubric on question ' . $this->id . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+            $this->lastaicomment = get_string('rubric_gradingfailed', 'qtype_aitext');
+            return [0.0, question_state::$needsgrading];
+        }
+
+        $answer = strip_tags((string) $response['answer']);
+        $fullaiprompt = $rubric->build_prompt(
+            strip_tags($this->questiontext ?? ''),
+            (string) $this->aiprompt,
+            $answer
+        );
+        $this->lastaiprompt = $fullaiprompt;
+
+        $strings = get_string_manager();
+        $failmessage = $strings->get_string('rubric_gradingfailed', 'qtype_aitext', null, $rubric->language);
+
+        try {
+            $modelreply = $this->perform_request($fullaiprompt, 'feedback');
+        } catch (\moodle_exception $e) {
+            debugging('AI grading unavailable, deferring to manual grading: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            $this->lastaicomment = $failmessage;
+            return [0.0, question_state::$needsgrading];
+        }
+
+        try {
+            $result = $rubric->grade($modelreply, $answer);
+        } catch (\RuntimeException $e) {
+            debugging('Rubric validation of the model reply failed, deferring to manual grading: '
+                . $e->getMessage(), DEBUG_DEVELOPER);
+            $this->lastaicomment = $failmessage;
+            return [0.0, question_state::$needsgrading];
+        }
+
+        $this->lastrubricresult = $result;
+        $this->lastaicomment = $OUTPUT->render_from_template(
+            'qtype_aitext/rubric_feedback',
+            $this->export_rubric_feedback($rubric, $result)
+        );
+        return [$result->fraction, question_state::graded_state_for_fraction($result->fraction)];
+    }
+
+    /**
+     * Build the context for the rubric_feedback template.
+     *
+     * All display-mode logic lives here: 'none' shows no numbers at all,
+     * 'coarse' a three-way badge per criterion, 'fine' points per
+     * criterion and the total. Labels are fetched in the rubric's language
+     * (the question's language), not the user's interface language.
+     *
+     * @param \qtype_aitext\local\rubric $rubric the parsed rubric.
+     * @param stdClass $result a validated result from rubric::grade().
+     * @return array template context.
+     */
+    private function export_rubric_feedback(\qtype_aitext\local\rubric $rubric, stdClass $result): array {
+        $strings = get_string_manager();
+        $lang = $rubric->language;
+        $str = fn($identifier, $a = null) => $strings->get_string($identifier, 'qtype_aitext', $a, $lang);
+
+        $model = $this->modelused ?: ($this->model ?: '');
+
+        $criteria = [];
+        foreach ($result->criteria as $criterion) {
+            if ($criterion->level >= $criterion->maxlevel) {
+                $badge = 'met';
+            } else if ($criterion->level > 0) {
+                $badge = 'partial';
+            } else {
+                $badge = 'missed';
+            }
+            $criteria[] = [
+                'title' => $criterion->title,
+                'descriptor' => $criterion->descriptor,
+                'showbadge' => $rubric->display === 'coarse',
+                'badge' => $badge,
+                'badgelabel' => $str('rubric_badge_' . $badge),
+                'showpoints' => $rubric->display === 'fine',
+                'points' => $criterion->level,
+                'max' => $criterion->maxlevel,
+                'hasevidence' => count($criterion->evidence) > 0,
+                'evidence' => $criterion->evidence,
+                'comment' => $criterion->comment,
+                'next' => $criterion->nextdescriptor,
+            ];
+        }
+
+        return [
+            'banner' => $str('rubric_banner', $model),
+            'criteria' => $criteria,
+            'evidencelabel' => $str('rubric_evidencelabel'),
+            'ailabel' => $str('rubric_ailabel'),
+            'nextlabel' => $str('rubric_nextlabel'),
+            'nextstep' => $result->nextstep,
+            'nextsteplabel' => $str('rubric_nextsteplabel'),
+            'showtotal' => $rubric->display === 'fine',
+            'points' => $result->points,
+            'maxpoints' => $result->maxpoints,
+            'totallabel' => $str('rubric_totallabel'),
+        ];
     }
 
     /**
