@@ -1,63 +1,68 @@
-# Moodle AI Text Question Type
+# AI Text Rubric question type
 
-[![Moodle Plugin CI](https://github.com/marcusgreen/moodle-qtype_aitext/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/marcusgreen/moodle-qtype_aitext/actions/workflows/moodle-ci.yml)
-[![GitHub Release](https://img.shields.io/github/release/marcusgreen/moodle-qtype_aitext.svg)](https://github.com/marcusgreen/moodle-qtype_aitext/releases)
-[![Moodle Support](https://img.shields.io/badge/Moodle-%3E%3D%204.5-blue)](https://marketplace.moodle.com/plugins/qtype_aitext)
+[![Moodle Plugin CI](https://github.com/pekkanikander/moodle-qtype_aitext_rubric/actions/workflows/moodle-ci.yml/badge.svg)](https://github.com/pekkanikander/moodle-qtype_aitext_rubric/actions/workflows/moodle-ci.yml)
+[![Moodle Support](https://img.shields.io/badge/Moodle-%3E%3D%204.5-blue)](https://moodle.org)
 
-*by Marcus Green*
+`qtype_aitext_rubric` is a Moodle question type that accepts free-text
+answers and grades them against a **criterion-referenced rubric** with a
+Large Language Model. The model never assigns marks: it only selects a
+level per criterion and quotes verbatim evidence from the student answer.
+The mark is computed in PHP from the validated levels; any deviation from
+the expected reply format falls closed to human grading.
 
-A Moodle question type that accepts free-text answers and grades them with a remote Large Language Model (LLM) such as ChatGPT or a self-hosted Ollama model. Each question defines its own grading prompt and optional marking scheme, so the AI evaluates responses against criteria you set.
+**Status: 0.1.0, alpha.** Not yet used in production anywhere.
 
+## Relationship to qtype_aitext
 
-For custom development and consultancy, contact Moodle Partner [Catalyst EU](https://www.catalyst-eu.net/).
+This is a hard fork of Marcus Green's
+[moodle-qtype_aitext](https://github.com/marcusgreen/moodle-qtype_aitext),
+renamed to a separate component so both plugins can coexist on one site.
+All of the upstream feature set (free-form AI prompt and marking scheme,
+prompt tester, spellcheck, mobile app support) is retained; upstream is
+merged in weekly. Credit for that foundation belongs to Marcus Green and
+the upstream contributors, including the ByCS team.
 
-Install from the Moodle plugins marketplace: <https://marketplace.moodle.com/plugins/qtype_aitext>
+What the fork adds:
 
-Changelog: <https://github.com/marcusgreen/moodle-qtype_aitext/blob/main/changelog.md>
+- **Rubric grading** — an optional per-question JSON rubric replaces the
+  free-form marking scheme. The model's reply is validated strictly
+  (exact criterion set, integer levels in range, verbatim evidence
+  quotes, length caps); marks are computed in PHP, never by the model.
+  Feedback is rendered from a fixed template and opens with a banner
+  naming the model. Raw model text is never shown to students.
+- **Answer screening** — deterministic prompt-injection tripwires (a
+  hard length cap and refusal of the prompt's section-marker sequence)
+  route suspect answers to a human grader instead of the model.
+- **Display modes** — rubric feedback detail is switchable per question:
+  `none`, `coarse` or `fine`.
+- **Scaffold-then-fade** — an optional answer skeleton shown above the
+  answer box, with a per-quiz override; the grader model never sees it.
+- Optional flagging of AI-graded responses for review via the companion
+  [local_aitextflags](https://github.com/pekkanikander/moodle-local_aitextflags)
+  plugin (rendered only if that plugin is installed).
 
-Additional documentation: <https://github.com/marcusgreen/moodle-qtype_aitext/wiki>
+Much of the fork's code is written by Claude (Anthropic's LLM), as
+recorded in the commit trailers; not all of it has been human-reviewed.
 
 ## Requirements
 
 - Moodle 4.5 or later.
 - Access to the API of an external LLM.
+- The two companion question behaviours, installed under
+  `question/behaviour/immediate_for_aitext` and
+  `question/behaviour/deferred_for_aitext`. Until the
+  [compatibility fix](https://github.com/pekkanikander/moodle-qbehaviour_immediate_for_aitext)
+  is merged upstream, use these forks:
+  - [qbehaviour_immediate_for_aitext](https://github.com/pekkanikander/moodle-qbehaviour_immediate_for_aitext)
+  - [qbehaviour_deferred_for_aitext](https://github.com/pekkanikander/moodle-qbehaviour_deferred_for_aitext)
 
-## How it works
+## Tracking upstream
 
-You supply two things per question:
+Upstream is fetched and merged weekly by a scheduled workflow. The
+component rename is re-applied to merged code by the idempotent
+`tools/rename-from-upstream.sh`.
 
-1. A **prompt** telling the AI how to evaluate the response.
-2. An optional **marking scheme** describing how to award marks.
-
-For the question *"Write an English sentence in the past tense"*, the prompt could be:
-
-> Explain if there is anything wrong with the grammar in this text.
-
-And a marking scheme could be:
-
-> Give 10 marks if there are no errors, all spelling is correct and it is in the past tense. Give 0 marks if the grammar is incorrect. Deduct one mark for every word that is misspelled.
-
-A **prompt tester** field in the question editing form uses AJAX to try prompts out directly, without stepping through the question preview screen.
-
-## Grading
-
-Grading runs through two dedicated companion question behaviours rather than overriding Moodle's core behaviours:
-
-- [`qbehaviour_immediate_for_aitext`](https://github.com/marcusgreen/moodle-qbehaviour_immediate_for_aitext)
-- [`qbehaviour_deferred_for_aitext`](https://github.com/marcusgreen/moodle-qbehaviour_deferred_for_aitext)
-
-These are separate plugins and must be installed alongside this question type, under `question/behaviour/immediate_for_aitext` and `question/behaviour/deferred_for_aitext`. Without them, AIText questions cannot be graded.
-
-This keeps AIText grading predictable and isolated from other question types. Existing quiz attempts that used the legacy `interactivecountback` behaviour are migrated automatically on upgrade; attempts belonging to other question types are left untouched.
-
-If the configured AI tools are unavailable, grading degrades gracefully instead of erroring, so an attempt is not lost.
-
-### Manual grading
-
-AI-generated feedback can be shown to a human grader and used as a reference when marking a response manually.
-
-## Credits
-Thanks to the ByCS team for ongoing extensive feedback, support encouragement, testing and contributed code since around July 2024
+Changelog: [changelog.md](changelog.md)
 
 ## License
 
