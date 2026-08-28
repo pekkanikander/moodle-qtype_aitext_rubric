@@ -116,6 +116,9 @@ final class rubric_test extends \basic_testcase {
             'bad display' => [$mutate(function (&$d) {
                 $d['display'] = 'verbose';
             })],
+            'non-string display' => [$mutate(function (&$d) {
+                $d['display'] = ['fine'];
+            })],
             'non-string sample answer' => [$mutate(function (&$d) {
                 $d['sampleanswer'] = 42;
             })],

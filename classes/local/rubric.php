@@ -111,7 +111,9 @@ class rubric {
 
         $display = $data->display ?? 'fine';
         if (!in_array($display, ['none', 'coarse', 'fine'], true)) {
-            throw new \InvalidArgumentException("rubric.display must be none, coarse or fine, not '{$display}'");
+            // The invalid value is deliberately not echoed back: the message can
+            // end up in form-error HTML, and the value may not even be a string.
+            throw new \InvalidArgumentException('rubric.display must be none, coarse or fine');
         }
 
         $sampleanswer = $data->sampleanswer ?? '';
