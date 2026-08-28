@@ -30,7 +30,6 @@ use qtype_aitext_rubric\local\rubric;
  * @covers \qtype_aitext_rubric\local\rubric
  */
 final class rubric_test extends \basic_testcase {
-
     /**
      * A valid two-criterion rubric (max points 3).
      *
@@ -157,6 +156,8 @@ final class rubric_test extends \basic_testcase {
     }
 
     /**
+     * Authoring errors must be rejected with InvalidArgumentException.
+     *
      * @dataProvider invalid_rubric_provider
      * @param string $json the broken rubric.
      */
@@ -211,8 +212,19 @@ final class rubric_test extends \basic_testcase {
         $this->assertSame(2, $result->criteria[0]->level);
         $this->assertSame('Selitetään.', $result->criteria[0]->descriptor);
         $this->assertNull($result->criteria[0]->nextdescriptor);
-        $this->assertSame('Selitetään.', $result->criteria[1]->nextdescriptor);
+        $this->assertNull($result->criteria[1]->nextdescriptor);
         $this->assertSame('Selitä myös uppoaminen.', $result->nextstep);
+    }
+
+    public function test_grade_reports_next_level_descriptor_below_top_level(): void {
+        $rubric = rubric::parse(self::rubricjson());
+        $decoded = json_decode(self::validreply());
+        $decoded->criteria[1]->level = 0;
+        $decoded->criteria[1]->evidence = [];
+        $result = $rubric->grade(json_encode($decoded), self::answer());
+        $this->assertSame(2, $result->points);
+        $this->assertSame('Ei mainita.', $result->criteria[1]->descriptor);
+        $this->assertSame('Selitetään.', $result->criteria[1]->nextdescriptor);
     }
 
     public function test_grade_extracts_json_from_surrounding_prose(): void {
@@ -310,6 +322,8 @@ final class rubric_test extends \basic_testcase {
     }
 
     /**
+     * Invalid model replies must be rejected with RuntimeException.
+     *
      * @dataProvider invalid_reply_provider
      * @param string|callable $reply a raw reply, or a mutation of the valid reply.
      */

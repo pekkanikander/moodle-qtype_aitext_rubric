@@ -25,7 +25,9 @@
     The display mode (none/coarse/fine) arrives precomputed as the
     showbadge/showpoints/showtotal booleans.
 
-    Context (see qtype_aitext_rubric_question::export_rubric_feedback()):
+    The context is built by qtype_aitext_rubric_question::export_rubric_feedback().
+
+    Example context (json):
     {
         "banner": "The assessment below was made by AI (claude-sonnet-4-5) and can be wrong.",
         "criteria": [

@@ -283,7 +283,9 @@ final class question_test extends \advanced_testcase {
         set_config('translatepostfix', false, 'qtype_aitext_rubric');
 
         $questiontext = 'AI question text';
-        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question(['questiontext' => $questiontext, 'model' => 'llama3']);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question(
+            ['questiontext' => $questiontext, 'model' => 'llama3']
+        );
 
         try {
             $processedfeedback = $aitext->process_feedback($json);

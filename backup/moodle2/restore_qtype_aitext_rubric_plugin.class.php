@@ -122,7 +122,7 @@ class restore_qtype_aitext_rubric_plugin extends restore_qtype_plugin {
      * @param array $data
      * @return void
      */
-    public function process_aitext($data) {
+    public function process_aitext_rubric($data) {
         global $DB;
 
         $data = (object)$data;

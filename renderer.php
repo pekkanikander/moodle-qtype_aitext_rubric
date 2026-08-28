@@ -122,8 +122,10 @@ class qtype_aitext_rubric_renderer extends qtype_renderer {
 
         // Scaffold level 1: show the authored skeleton above the answer box
         // while answering. Presentational only; grading is unaffected.
-        if (empty($options->readonly) && trim((string) $question->scaffold) !== ''
-                && $question->effective_scaffold_level($options) == 1) {
+        if (
+            empty($options->readonly) && trim((string) $question->scaffold) !== ''
+                && $question->effective_scaffold_level($options) == 1
+        ) {
             $result .= html_writer::tag(
                 'div',
                 format_text($question->scaffold, FORMAT_HTML, ['context' => $options->context]),
@@ -212,8 +214,12 @@ class qtype_aitext_rubric_renderer extends qtype_renderer {
         // local_aitextflags plugin; without it this renders nothing.
         $flagbutton = '';
         if (!empty($comment)) {
-            $flagbutton = component_class_callback('\\local_aitextflags\\api',
-                'render_flag_button', [$qa, $options], '');
+            $flagbutton = component_class_callback(
+                '\\local_aitextflags\\api',
+                'render_flag_button',
+                [$qa, $options],
+                ''
+            );
         }
 
         if ($this->page->pagetype === 'question-bank-previewquestion-preview') {

@@ -25,8 +25,9 @@
 /**
  * Upgrade code for the aitext_rubric question type.
  *
- * qtype_aitext_rubric is a fresh component (a renamed hard fork of
- * qtype_aitext); its 0.1.0 install has no earlier schema to upgrade from.
+ * qtype_aitext_rubric is a fresh component (a renamed hard fork of the
+ * upstream aitext question type); its 0.1.0 install has no earlier schema
+ * to upgrade from.
  *
  * @param int $oldversion the version we are upgrading from.
  */
