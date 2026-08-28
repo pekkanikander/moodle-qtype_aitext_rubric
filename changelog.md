@@ -1,4 +1,31 @@
-### Moodle AIText question type
+### Moodle AI Text Rubric question type
+
+## Release 0.1.0 Aug 2026
+
+First release of `qtype_aitext_rubric`, a hard fork of
+[qtype_aitext](https://github.com/marcusgreen/moodle-qtype_aitext)
+(forked at upstream 2.1.0), renamed to a separate component. On top of
+the upstream feature set:
+
+- Criterion-referenced rubric grading: an optional per-question JSON
+  rubric; the model selects levels and quotes verbatim evidence, marks
+  are computed in PHP, and any invalid reply falls closed to human
+  grading. Feedback is rendered from a fixed template with a banner
+  naming the model.
+- Rubric feedback display modes `none`, `coarse` and `fine`.
+- Deterministic screening of student answers before AI grading (length
+  cap, section-marker refusal); refused answers go to a human grader.
+- Scaffold-then-fade: an optional answer skeleton with per-quiz
+  override.
+- Optional integration with `local_aitextflags` for flagging AI-graded
+  responses.
+
+The upgrade chain was reset; this is a fresh component with no
+migration path from qtype_aitext. Upstream history follows below.
+
+---
+
+### Upstream history (qtype_aitext)
 
 ## Release 2.1.0 Aug 2026
 
