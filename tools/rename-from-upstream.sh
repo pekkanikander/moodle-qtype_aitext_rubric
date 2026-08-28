@@ -23,6 +23,8 @@ cd "$(git rev-parse --show-toplevel)"
 # R7  edit form file name references.
 # R8  test_question_maker helper methods named after the qtype.
 # R9  the restore dispatch method process_<element> for the renamed element.
+# R10 quoted XML path fragment '/aitext' (restore get_pathfor(); must track
+#     the backup element renamed by R3, or restore paths never match).
 RULES='
 s/qtype_aitext(?!_rubric)/qtype_aitext_rubric/g;
 s{question/type/aitext(?!_rubric)}{question/type/aitext_rubric}g;
@@ -33,6 +35,7 @@ s/\@subpackage\s+aitext\b/\@subpackage aitext_rubric/g;
 s/edit_aitext_form/edit_aitext_rubric_form/g;
 s/(make|get)_aitext_question/${1}_aitext_rubric_question/g;
 s/process_aitext\b/process_aitext_rubric/g;
+s{([\x27"])/aitext(?!_rubric)\1}{${1}/aitext_rubric$1}g;
 '
 
 git ls-files -z -- \
