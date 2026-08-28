@@ -48,7 +48,7 @@ class restore_qtype_aitext_rubric_plugin extends restore_qtype_plugin {
         // Add own qtype stuff.
         $elename = 'aitext_rubric';
         // We use get_recommended_name() so this works.
-        $elepath = $this->get_pathfor('/aitext');
+        $elepath = $this->get_pathfor('/aitext_rubric');
         $paths[] = new restore_path_element($elename, $elepath);
 
         $elename = 'sampleresponse';
