@@ -50,11 +50,13 @@ recorded in the commit trailers; not all of it has been human-reviewed.
 - Access to the API of an external LLM.
 - The two companion question behaviours, installed under
   `question/behaviour/immediate_for_aitext` and
-  `question/behaviour/deferred_for_aitext`. Until the
-  [compatibility fix](https://github.com/pekkanikander/moodle-qbehaviour_immediate_for_aitext)
-  is merged upstream, use these forks:
+  `question/behaviour/deferred_for_aitext`. Upstream pins both to
+  `qtype_aitext` via `is_compatible_question()`, so use these forks,
+  which drop that check:
   - [qbehaviour_immediate_for_aitext](https://github.com/pekkanikander/moodle-qbehaviour_immediate_for_aitext)
+    ([PR upstream](https://github.com/marcusgreen/moodle-qbehaviour_immediate_for_aitext/pull/1))
   - [qbehaviour_deferred_for_aitext](https://github.com/pekkanikander/moodle-qbehaviour_deferred_for_aitext)
+    ([PR upstream](https://github.com/marcusgreen/moodle-qbehaviour_deferred_for_aitext/pull/1))
 
 ## Tracking upstream
 
