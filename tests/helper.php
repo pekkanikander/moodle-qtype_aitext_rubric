@@ -17,7 +17,7 @@
 /**
  * Test helpers for the aitext question type.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext_test_helper extends question_test_helper {
+class qtype_aitext_rubric_test_helper extends question_test_helper {
     /**
      * What test questions to import
      * @return array
@@ -44,11 +44,11 @@ class qtype_aitext_test_helper extends question_test_helper {
     /**
      * Make an aitext question for testing
      * @param array $options
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public static function make_aitext_question(array $options) {
-        question_bank::load_question_definition_classes('aitext');
-        $question = new qtype_aitext_question();
+    public static function make_aitext_rubric_question(array $options) {
+        question_bank::load_question_definition_classes('aitext_rubric');
+        $question = new qtype_aitext_rubric_question();
         $question->questiontext = $options['questiontext'] ?? "Write an English sentence in the past tense";
         $question->model = $options['model'] ?? '';
         $question->sampleanswers = $options['sampleanswers'] ?? '';
@@ -59,16 +59,16 @@ class qtype_aitext_test_helper extends question_test_helper {
         $question->spellcheck = 0;
 
         test_question_maker::initialise_a_question($question);
-        $question->qtype = question_bank::get_qtype('aitext');
+        $question->qtype = question_bank::get_qtype('aitext_rubric');
         return $question;
     }
     /**
      * Helper method to reduce duplication.
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
     protected function initialise_aitext_question() {
-        question_bank::load_question_definition_classes('aitext');
-        $q = new qtype_aitext_question();
+        question_bank::load_question_definition_classes('aitext_rubric');
+        $q = new qtype_aitext_rubric_question();
         test_question_maker::initialise_a_question($q);
         $q->name = 'aitext question (HTML editor)';
         $q->questiontext = 'Please write a story about a frog.';
@@ -81,16 +81,16 @@ class qtype_aitext_test_helper extends question_test_helper {
         $q->model = 'gpt4';
         $q->graderinfo = '';
         $q->graderinfoformat = FORMAT_HTML;
-        $q->qtype = question_bank::get_qtype('aitext');
+        $q->qtype = question_bank::get_qtype('aitext_rubric');
 
         return $q;
     }
 
     /**
      * Makes an aitext question using the HTML editor as input.
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public function make_aitext_question_editor() {
+    public function make_aitext_rubric_question_editor() {
         return $this->initialise_aitext_question();
     }
 
@@ -101,7 +101,7 @@ class qtype_aitext_test_helper extends question_test_helper {
      *
      * @return stdClass the data that would be returned by $form->get_gata();
      */
-    public function get_aitext_question_form_data_editor() {
+    public function get_aitext_rubric_question_form_data_editor() {
         $fromform = new stdClass();
         $fromform->name = 'aitext question (HTML editor)';
         $fromform->questiontext = ['text' => 'Please write a story about a frog.', 'format' => FORMAT_HTML];
@@ -123,9 +123,9 @@ class qtype_aitext_test_helper extends question_test_helper {
 
     /**
      * Makes an aitext question using plain text input.
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public function make_aitext_question_plain() {
+    public function make_aitext_rubric_question_plain() {
         $q = $this->initialise_aitext_question();
         $q->responseformat = 'plain';
         return $q;
@@ -138,7 +138,7 @@ class qtype_aitext_test_helper extends question_test_helper {
      *
      * @return stdClass the data that would be returned by $form->get_gata();
      */
-    public function get_aitext_question_form_data_plain() {
+    public function get_aitext_rubric_question_form_data_plain() {
         $fromform = new stdClass();
 
         $fromform->name = 'aitext question with filepicker and attachments';
@@ -161,9 +161,9 @@ class qtype_aitext_test_helper extends question_test_helper {
 
     /**
      * Makes an aitext question using monospaced input.
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public function make_aitext_question_monospaced() {
+    public function make_aitext_rubric_question_monospaced() {
         $q = $this->initialise_aitext_question();
         $q->responseformat = 'monospaced';
         return $q;
@@ -171,9 +171,9 @@ class qtype_aitext_test_helper extends question_test_helper {
 
     /**
      * Create a aitext question with a response template for testing
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public function make_aitext_question_responsetemplate() {
+    public function make_aitext_rubric_question_responsetemplate() {
         $q = $this->initialise_aitext_question();
         $q->responsetemplate = 'Once upon a time';
         $q->responsetemplateformat = FORMAT_HTML;
@@ -182,9 +182,9 @@ class qtype_aitext_test_helper extends question_test_helper {
 
     /**
      * Makes an aitext question without an online text editor.
-     * @return qtype_aitext_question
+     * @return qtype_aitext_rubric_question
      */
-    public function make_aitext_question_noinline() {
+    public function make_aitext_rubric_question_noinline() {
         $q = $this->initialise_aitext_question();
         $q->responseformat = 'noinline';
         return $q;

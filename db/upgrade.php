@@ -15,159 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * AI Text question type upgrade code.
+ * AI Text Rubric question type upgrade code.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  Marcus Green 2024
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Upgrade code for the aitext question type.
+ * Upgrade code for the aitext_rubric question type.
+ *
+ * qtype_aitext_rubric is a fresh component (a renamed hard fork of
+ * qtype_aitext); its 0.1.0 install has no earlier schema to upgrade from.
  *
  * @param int $oldversion the version we are upgrading from.
  */
-function xmldb_qtype_aitext_upgrade($oldversion) {
-    global $CFG, $DB;
-
-    $dbman = $DB->get_manager();
-
-    // Include upgrade helper functions for data migrations.
-    require_once(__DIR__ . '/upgradelib.php');
-
-    if ($oldversion < 2024050300) {
-        $table = new xmldb_table('qtype_aitext');
-        // Used for prompt testing in the edit form.
-        $field = new xmldb_field('sampleanswer', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2024050300, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2024051100) {
-        // Define field model to be added to qtype_aitext.
-        $table = new xmldb_table('qtype_aitext');
-        $field = new xmldb_field('model', XMLDB_TYPE_CHAR, '60', null, null, null, null, 'sampleanswer');
-
-        // Conditionally launch add field model.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2024051100, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2025041002) {
-        // Define table qtype_aitext_sampleresponses to be created.
-        $table = new xmldb_table('qtype_aitext_sampleresponses');
-
-        // Adding fields to table qtype_aitext_sampleresponses.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('question', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('response', XMLDB_TYPE_TEXT, null, null, null, null, null);
-
-        // Adding keys to table qtype_aitext_sampleresponses.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('ait_sampleresponses', XMLDB_KEY_FOREIGN, ['question'], 'qtype_aitext', ['id']);
-
-        // Conditionally launch create table for qtype_aitext_sampleresponses.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-        // Move existing sampleanswers to sampleresponses table.
-        $sampleanswers = $DB->get_records('qtype_aitext', null, '', 'id,sampleanswer');
-        foreach ($sampleanswers as $sampleanswer) {
-                $record = ['question' => $sampleanswer->id, 'response' => $sampleanswer->sampleanswer];
-                $DB->insert_record('qtype_aitext_sampleresponses', $record);
-        }
-        // At some point remove sampleanswer field from qtype_aitext table.
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2025041002, 'qtype', 'aitext');
-    }
-    if ($oldversion < 2025072200) {
-        // Define field spellcheck to be added to qtype_aitext.
-        $table = new xmldb_table('qtype_aitext');
-        $field = new xmldb_field('spellcheck', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'model');
-
-        // Conditionally launch add field spellcheck.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2025072200, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2026020601) {
-        // Migrate legacy expert mode prompts from [[placeholder]] to {{placeholder}} syntax.
-        $migratedcount = qtype_aitext_upgrade_migrate_legacy_prompts();
-
-        if ($migratedcount > 0) {
-            mtrace("Migrated {$migratedcount} legacy expert mode prompts to new {{placeholder}} syntax.");
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2026020601, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2026072800) {
-        // Migrate legacy attempts stored as 'interactivecountback' to 'immediate_for_aitext'.
-        $migratedcount = qtype_aitext_upgrade_migrate_countback_attempts();
-
-        if ($migratedcount > 0) {
-            mtrace("Migrated {$migratedcount} legacy 'interactivecountback' aitext question attempt(s) " .
-                "to 'immediate_for_aitext'.");
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2026072800, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2026082700) {
-        // Define field rubric to be added to qtype_aitext.
-        $table = new xmldb_table('qtype_aitext');
-        $field = new xmldb_field('rubric', XMLDB_TYPE_TEXT, null, null, null, null, null, 'spellcheck');
-
-        // Conditionally launch add field rubric.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2026082700, 'qtype', 'aitext');
-    }
-
-    if ($oldversion < 2026082702) {
-        // Define fields scaffold and scaffoldlevel to be added to qtype_aitext.
-        $table = new xmldb_table('qtype_aitext');
-        $field = new xmldb_field('scaffold', XMLDB_TYPE_TEXT, null, null, null, null, null, 'rubric');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        $field = new xmldb_field('scaffoldlevel', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '2', 'scaffold');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Define table qtype_aitext_quiz for per-quiz scaffold level overrides.
-        $table = new xmldb_table('qtype_aitext_quiz');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('quizid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('scaffoldlevel', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, null);
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('quizid', XMLDB_KEY_FOREIGN_UNIQUE, ['quizid'], 'quiz', ['id']);
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Aitext savepoint reached.
-        upgrade_plugin_savepoint(true, 2026082702, 'qtype', 'aitext');
-    }
-
+function xmldb_qtype_aitext_rubric_upgrade($oldversion) {
     return true;
 }

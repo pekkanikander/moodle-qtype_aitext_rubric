@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext\local;
+namespace qtype_aitext_rubric\local;
 
 /**
  * Hook listener callbacks.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2025 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,18 +32,18 @@ class hook_callbacks {
      */
     public static function handle_purpose_usage(\local_ai_manager\hook\purpose_usage $hook): void {
         $hook->set_component_displayname(
-            'qtype_aitext',
-            get_string('pluginname_userfaced', 'qtype_aitext')
+            'qtype_aitext_rubric',
+            get_string('pluginname_userfaced', 'qtype_aitext_rubric')
         );
         $hook->add_purpose_usage_description(
             'feedback',
-            'qtype_aitext',
-            get_string('purposeplacedescription_feedback', 'qtype_aitext')
+            'qtype_aitext_rubric',
+            get_string('purposeplacedescription_feedback', 'qtype_aitext_rubric')
         );
         $hook->add_purpose_usage_description(
             'translate',
-            'qtype_aitext',
-            get_string('purposeplacedescription_translate', 'qtype_aitext')
+            'qtype_aitext_rubric',
+            get_string('purposeplacedescription_translate', 'qtype_aitext_rubric')
         );
     }
 }

@@ -14,28 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext;
+namespace qtype_aitext_rubric;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->libdir . "/phpunit/classes/restore_date_testcase.php");
-require_once($CFG->dirroot . '/question/type/aitext/tests/helper.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/tests/helper.php');
 
 /**
  * Test restore logic.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class restore_test extends \restore_date_testcase {
     /**
-     * Test missing qtype_aitext_options creation.
+     * Test missing qtype_aitext_rubric_options creation.
      *
      * @covers ::restore()
      *
-     * Old backup files may contain aitext with no qtype_aitext_options record.
+     * Old backup files may contain aitext with no qtype_aitext_rubric_options record.
      * During restore, we add default options for any questions like that.
      * That is what is tested in this file.
      */
@@ -53,10 +53,10 @@ final class restore_test extends \restore_date_testcase {
         $context = \context_module::instance($qbank->cmid);
         $category = question_get_default_category($context->id, true);
         $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $aitext = $questiongenerator->create_question('aitext', 'editor', ['category' => $category->id]);
+        $aitext = $questiongenerator->create_question('aitext_rubric', 'editor', ['category' => $category->id]);
 
         // Remove the options record, which means that the backup will look like a backup made in an old Moodle.
-        // This line should include deletion of qtype_aitext question id matching $aitext->id but it causes an error.
+        // This line should include deletion of qtype_aitext_rubric question id matching $aitext->id but it causes an error.
         // This needs looking into.
 
         // Do backup and restore.
@@ -76,7 +76,7 @@ final class restore_test extends \restore_date_testcase {
                                               JOIN {question_versions} qv ON qv.questionid = q.id
                                               JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
                                              WHERE qbe.questioncategoryid = ?
-                                               AND q.qtype = ?', [$newcategory->id, 'aitext']);
-        $this->assertTrue($DB->record_exists('qtype_aitext', ['questionid' => $newaitext->id]));
+                                               AND q.qtype = ?', [$newcategory->id, 'aitext_rubric']);
+        $this->assertTrue($DB->record_exists('qtype_aitext_rubric', ['questionid' => $newaitext->id]));
     }
 }

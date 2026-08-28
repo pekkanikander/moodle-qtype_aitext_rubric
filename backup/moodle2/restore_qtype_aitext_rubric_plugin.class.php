@@ -17,7 +17,7 @@
 /**
  * Aitext question type backup
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @subpackage backup-moodle2
  * @copyright  2024 Marcus Green
 
@@ -34,7 +34,7 @@
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_qtype_aitext_plugin extends restore_qtype_plugin {
+class restore_qtype_aitext_rubric_plugin extends restore_qtype_plugin {
     /**
      * Returns the paths to be handled by the plugin at question level
      */
@@ -46,7 +46,7 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
         $this->add_question_question_answers($paths);
 
         // Add own qtype stuff.
-        $elename = 'aitext';
+        $elename = 'aitext_rubric';
         // We use get_recommended_name() so this works.
         $elepath = $this->get_pathfor('/aitext');
         $paths[] = new restore_path_element($elename, $elepath);
@@ -152,11 +152,11 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
         ) ? true : false;
 
         // If the question has been created by restore, we need to create its
-        // qtype_aitext too.
+        // qtype_aitext_rubric too.
         if ($questioncreated) {
             $data->questionid = $this->get_new_parentid('question');
-            $newitemid = $DB->insert_record('qtype_aitext', $data);
-            $this->set_mapping('qtype_aitext', $oldid, $newitemid);
+            $newitemid = $DB->insert_record('qtype_aitext_rubric', $data);
+            $this->set_mapping('qtype_aitext_rubric', $oldid, $newitemid);
         }
     }
 
@@ -182,9 +182,9 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
             // Adjust value to link back to the questions table.
             $data->question = $newquestionid;
             // Insert record.
-            $newitemid = $DB->insert_record('qtype_aitext_sampleresponses', $data);
+            $newitemid = $DB->insert_record('qtype_aitext_rubric_sampleresponses', $data);
             // Create mapping (needed for decoding links).
-            $this->set_mapping('qtype_aitext_sampleresponses', $oldid, $newitemid);
+            $this->set_mapping('qtype_aitext_rubric_sampleresponses', $oldid, $newitemid);
         }
     }
 
@@ -193,7 +193,7 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
      */
     public static function define_decode_contents() {
         return [
-            new restore_decode_content('qtype_aitext', 'graderinfo', 'qtype_aitext'),
+            new restore_decode_content('qtype_aitext_rubric', 'graderinfo', 'qtype_aitext_rubric'),
         ];
     }
 
@@ -207,12 +207,12 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
                     SELECT q.*
                       FROM {question} q
                       JOIN {backup_ids_temp} bi ON bi.newitemid = q.id
-                 LEFT JOIN {qtype_aitext} qeo ON qeo.questionid = q.id
+                 LEFT JOIN {qtype_aitext_rubric} qeo ON qeo.questionid = q.id
                      WHERE q.qtype = ?
                        AND qeo.id IS NULL
                        AND bi.backupid = ?
                        AND bi.itemname = ?
-                ", ['aitext', $this->get_restoreid(), 'question_created']);
+                ", ['aitext_rubric', $this->get_restoreid(), 'question_created']);
 
         foreach ($qwithoutoptions as $q) {
             $defaultoptions = new stdClass();
@@ -236,7 +236,7 @@ class restore_qtype_aitext_plugin extends restore_qtype_plugin {
             $defaultoptions->rubric = '';
             $defaultoptions->scaffold = '';
             $defaultoptions->scaffoldlevel = 2;
-            $DB->insert_record('qtype_aitext', $defaultoptions);
+            $DB->insert_record('qtype_aitext_rubric', $defaultoptions);
         }
     }
 }

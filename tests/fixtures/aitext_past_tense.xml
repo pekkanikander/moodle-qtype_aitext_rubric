@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
 <!-- question: 14966  -->
-  <question type="aitext">
+  <question type="aitext_rubric">
     <name>
       <text>English past tense</text>
     </name>

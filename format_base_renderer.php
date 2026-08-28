@@ -17,8 +17,8 @@
 /**
  * Abstract base renderer for different response formats.
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2026 ISB Bayern
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,7 @@
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class qtype_aitext_format_renderer_base extends plugin_renderer_base {
+abstract class qtype_aitext_rubric_format_renderer_base extends plugin_renderer_base {
     /** @var question_display_options Question display options instance for any necessary information for rendering the question. */
     protected $displayoptions;
 

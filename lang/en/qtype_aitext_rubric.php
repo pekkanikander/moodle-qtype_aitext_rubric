@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'qtype_aitext', language 'en'
+ * Strings for component 'qtype_aitext_rubric', language 'en'
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -108,12 +108,12 @@ $string['minwordlimitboundary'] = 'This question requires a response of at least
 $string['model'] = 'Model';
 $string['nlines'] = '{$a} lines';
 $string['nomarkscheme'] = 'No mark scheme provided. Set marks to null.';
-$string['pluginname'] = 'AI Text';
+$string['pluginname'] = 'AI Text Rubric';
 $string['pluginname_help'] = 'In response to a question, the respondent enters text. A response template may be provided. Responses are given a preliminary grade by an AI system (e.g. ChatGPT) then can be graded manually.';
 $string['pluginname_link'] = 'question/type/AI Text';
 $string['pluginname_userfaced'] = 'Question type "AI text" with AI supported feedback generation';
-$string['pluginnameadding'] = 'Adding an AI Text question';
-$string['pluginnameediting'] = 'Editing an AI Text question';
+$string['pluginnameadding'] = 'Adding an AI Text Rubric question';
+$string['pluginnameediting'] = 'Editing an AI Text Rubric question';
 $string['pluginnamesummary'] = 'Allows a response of a file upload and/or online text. The student response is processed by the configured AI/Large language model which returns feedback and optionally a grade.';
 $string['privacy::responsefieldlines'] = 'Number of lines indicating the size of the input box (textarea).';
 $string['privacy:metadata'] = 'AI Text question type plugin allows question authors to set default options as user preferences.';

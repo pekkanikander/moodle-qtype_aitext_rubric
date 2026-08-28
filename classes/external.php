@@ -17,7 +17,7 @@
 /**
  * External
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  Justin Hunt - poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -32,10 +32,10 @@ use local_ai_manager\manager;
 /**
  * External class.
  *
- * @package qtype_aitext
+ * @package qtype_aitext_rubric
  * @author  Justin Hunt - poodll.com
  */
-class qtype_aitext_external extends external_api {
+class qtype_aitext_rubric_external extends external_api {
     /**
      * Get the parameters and types
      *
@@ -114,11 +114,11 @@ class qtype_aitext_external extends external_api {
         $marksscheme = clean_param(htmlspecialchars($marksscheme), PARAM_CLEANHTML);
 
         // Build an aitext question instance so we can call the same code that the question type uses when it grades.
-        $type = 'aitext';
+        $type = 'aitext_rubric';
         \question_bank::load_question_definition_classes($type);
-        $aiquestion = new qtype_aitext_question();
+        $aiquestion = new qtype_aitext_rubric_question();
         $aiquestion->contextid = $contextid;
-        $aiquestion->qtype = \question_bank::get_qtype('aitext');
+        $aiquestion->qtype = \question_bank::get_qtype('aitext_rubric');
         // Provide the current question text for placeholder substitution.
         $aiquestion->questiontext = $questiontext;
         // Make sure we have the right data for AI to work with.
@@ -127,7 +127,7 @@ class qtype_aitext_external extends external_api {
             $feedback = $aiquestion->perform_request($fullaiprompt);
             $contentobject = $aiquestion->process_feedback($feedback);
         } else {
-            $contentobject = (object)["feedback" => get_string('err_parammissing', 'qtype_aitext'), "marks" => 0];
+            $contentobject = (object)["feedback" => get_string('err_parammissing', 'qtype_aitext_rubric'), "marks" => 0];
         }
         // Return whatever we have got.
         return $contentobject;

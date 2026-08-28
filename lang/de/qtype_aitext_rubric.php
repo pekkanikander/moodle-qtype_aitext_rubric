@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'qtype_aitext', language 'de'
+ * Strings for component 'qtype_aitext_rubric', language 'de'
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -94,7 +94,7 @@ $string['minwordlimitboundary'] = 'Diese Frage erfordert eine Antwort von mindes
 $string['model'] = 'Model';
 $string['nlines'] = '{$a} Zeilen';
 $string['nomarkscheme'] = 'Kein Bewertungsschema angegeben. Setze Punkte auf null.';
-$string['pluginname'] = 'AI Text';
+$string['pluginname'] = 'AI Text Rubric';
 $string['pluginname_help'] = 'Als Antwort auf eine Frage gibt der Befragte Text ein. Es kann eine Antwortvorlage bereitgestellt werden. Die Antworten werden von einem KI-System (z. B. ChatGPT) vorbewertet und können dann manuell bewertet werden.';
 $string['pluginname_link'] = 'Frage/Typ/AI Text';
 $string['pluginnameadding'] = 'Hinzufügen einer KI-Text-Frage';

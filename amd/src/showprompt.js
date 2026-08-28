@@ -16,7 +16,7 @@
 /**
  * Display a button in testing to reveal the prompt that was sent
  *
- * @module     qtype_aitext/showprompt
+ * @module     qtype_aitext_rubric/showprompt
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

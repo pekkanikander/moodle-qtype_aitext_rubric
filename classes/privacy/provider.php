@@ -15,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for qtype_aitext.
+ * Privacy Subsystem implementation for qtype_aitext_rubric.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace qtype_aitext\privacy;
+namespace qtype_aitext_rubric\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\writer;
 
 /**
- * Privacy Subsystem for qtype_aitext implementing user_preference_provider.
+ * Privacy Subsystem for qtype_aitext_rubric implementing user_preference_provider.
  *
  * @copyright  2018 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -45,10 +45,10 @@ class provider implements
      * @return  collection     A listing of user data stored through this system.
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_user_preference('qtype_aitext_defaultmark', 'privacy:preference:defaultmark');
-        $collection->add_user_preference('qtype_aitext_responseformat', 'privacy:preference:responseformat');
-        $collection->add_user_preference('qtype_aitext_responsefieldlines', 'privacy:preference:responsefieldlines');
-        $collection->add_user_preference('qtype_aitext_maxbytes', 'privacy:preference:maxbytes');
+        $collection->add_user_preference('qtype_aitext_rubric_defaultmark', 'privacy:preference:defaultmark');
+        $collection->add_user_preference('qtype_aitext_rubric_responseformat', 'privacy:preference:responseformat');
+        $collection->add_user_preference('qtype_aitext_rubric_responsefieldlines', 'privacy:preference:responsefieldlines');
+        $collection->add_user_preference('qtype_aitext_rubric_maxbytes', 'privacy:preference:maxbytes');
         return $collection;
     }
 
@@ -58,60 +58,60 @@ class provider implements
      * @param int $userid The userid of the user whose data is to be exported.
      */
     public static function export_user_preferences(int $userid) {
-        $preference = get_user_preferences('qtype_aitext_defaultmark', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_defaultmark', null, $userid);
         if (null !== $preference) {
-            $desc = get_string('privacy:preference:defaultmark', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'defaultmark', $preference, $desc);
+            $desc = get_string('privacy:preference:defaultmark', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'defaultmark', $preference, $desc);
         }
 
-        $preference = get_user_preferences('qtype_aitext_responseformat', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_responseformat', null, $userid);
         if (null !== $preference) {
             switch ($preference) {
                 case 'editor':
-                    $stringvalue = get_string('formateditor', 'qtype_aitext');
+                    $stringvalue = get_string('formateditor', 'qtype_aitext_rubric');
                     break;
                 case 'editorfilepicker':
-                    $stringvalue = get_string('formateditorfilepicker', 'qtype_aitext');
+                    $stringvalue = get_string('formateditorfilepicker', 'qtype_aitext_rubric');
                     break;
                 case 'plain':
-                    $stringvalue = get_string('formatplain', 'qtype_aitext');
+                    $stringvalue = get_string('formatplain', 'qtype_aitext_rubric');
                     break;
                 case 'monospaced':
-                    $stringvalue = get_string('formatmonospaced', 'qtype_aitext');
+                    $stringvalue = get_string('formatmonospaced', 'qtype_aitext_rubric');
                     break;
                 case 'noinline':
-                    $stringvalue = get_string('formatnoinline', 'qtype_aitext');
+                    $stringvalue = get_string('formatnoinline', 'qtype_aitext_rubric');
                     break;
                 default:
-                    $stringvalue = get_string('formateditor', 'qtype_aitext');
+                    $stringvalue = get_string('formateditor', 'qtype_aitext_rubric');
                     break;
             }
-            $desc = get_string('privacy:preference:responseformat', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'responseformat', $stringvalue, $desc);
+            $desc = get_string('privacy:preference:responseformat', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'responseformat', $stringvalue, $desc);
         }
 
-        $preference = get_user_preferences('qtype_aitext_responserequired', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_responserequired', null, $userid);
         if (null !== $preference) {
             if ($preference) {
-                $stringvalue = get_string('responseisrequired', 'qtype_aitext');
+                $stringvalue = get_string('responseisrequired', 'qtype_aitext_rubric');
             } else {
-                $stringvalue = get_string('responsenotrequired', 'qtype_aitext');
+                $stringvalue = get_string('responsenotrequired', 'qtype_aitext_rubric');
             }
-            $desc = get_string('privacy:preference:responserequired', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'responserequired', $stringvalue, $desc);
+            $desc = get_string('privacy:preference:responserequired', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'responserequired', $stringvalue, $desc);
         }
 
-        $preference = get_user_preferences('qtype_aitext_responsefieldlines', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_responsefieldlines', null, $userid);
         if (null !== $preference) {
-            $desc = get_string('privacy:preference:responsefieldlines', 'qtype_aitext');
+            $desc = get_string('privacy:preference:responsefieldlines', 'qtype_aitext_rubric');
             writer::export_user_preference(
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 'responsefieldlines',
-                get_string('nlines', 'qtype_aitext', $preference),
+                get_string('nlines', 'qtype_aitext_rubric', $preference),
                 $desc
             );
         }
-        $preference = get_user_preferences('qtype_aitext_attachments', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_attachments', null, $userid);
         if (null !== $preference) {
             if ($preference == 0) {
                 $stringvalue = get_string('no');
@@ -120,22 +120,22 @@ class provider implements
             } else {
                 $stringvalue = $preference;
             }
-            $desc = get_string('privacy:preference:attachments', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'attachments', $stringvalue, $desc);
+            $desc = get_string('privacy:preference:attachments', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'attachments', $stringvalue, $desc);
         }
 
-        $preference = get_user_preferences('qtype_aitext_attachmentsrequired', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_attachmentsrequired', null, $userid);
         if (null !== $preference) {
             if ($preference == 0) {
-                $stringvalue = get_string('attachmentsoptional', 'qtype_aitext');
+                $stringvalue = get_string('attachmentsoptional', 'qtype_aitext_rubric');
             } else {
                 $stringvalue = $preference;
             }
-            $desc = get_string('privacy:preference:attachmentsrequired', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'attachmentsrequired', $stringvalue, $desc);
+            $desc = get_string('privacy:preference:attachmentsrequired', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'attachmentsrequired', $stringvalue, $desc);
         }
 
-        $preference = get_user_preferences('qtype_aitext_maxbytes', null, $userid);
+        $preference = get_user_preferences('qtype_aitext_rubric_maxbytes', null, $userid);
         if (null !== $preference) {
             switch ($preference) {
                 case 52428800:
@@ -172,8 +172,8 @@ class provider implements
                     $stringvalue = '50MB';
                     break;
             }
-            $desc = get_string('privacy:preference:maxbytes', 'qtype_aitext');
-            writer::export_user_preference('qtype_aitext', 'maxbytes', $stringvalue, $desc);
+            $desc = get_string('privacy:preference:maxbytes', 'qtype_aitext_rubric');
+            writer::export_user_preference('qtype_aitext_rubric', 'maxbytes', $stringvalue, $desc);
         }
     }
 }

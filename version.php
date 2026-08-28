@@ -17,19 +17,19 @@
 /**
  * Version information for the aitext question type.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'qtype_aitext';
-$plugin->version = 2026082702;
+$plugin->component = 'qtype_aitext_rubric';
+$plugin->version = 2026082800;
 $plugin->requires = 2024100700;  // Moodle 4.5.
-$plugin->release = '2.1.0-drilling.3';
+$plugin->release = '0.1.0';
 $plugin->supported = [405, 502];
-$plugin->maturity = MATURITY_STABLE;
+$plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = [
     'qbehaviour_deferred_for_aitext' => ANY_VERSION,
     'qbehaviour_immediate_for_aitext' => ANY_VERSION,

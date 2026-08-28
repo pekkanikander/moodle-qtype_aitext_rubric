@@ -16,7 +16,7 @@
 /**
  * Expert mode template insertion for AI Text question type.
  *
- * @module     qtype_aitext/expertmode
+ * @module     qtype_aitext_rubric/expertmode
  * @copyright  2026 ISB Bayern
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -47,10 +47,10 @@ export const init = (template, roleprompt) => {
 
         if (currentValue) {
             // Ask for confirmation before replacing existing content.
-            const confirmMessage = await get_string('expertmodeconfirm', 'qtype_aitext', roleprompt);
+            const confirmMessage = await get_string('expertmodeconfirm', 'qtype_aitext_rubric', roleprompt);
 
             Notification.confirm(
-                await get_string('useexpertmodetemplate', 'qtype_aitext'),
+                await get_string('useexpertmodetemplate', 'qtype_aitext_rubric'),
                 confirmMessage,
                 await get_string('yes', 'core'),
                 await get_string('no', 'core'),

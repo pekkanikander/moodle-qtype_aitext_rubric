@@ -18,8 +18,8 @@
  *
  * Question type class for the aitext question type.
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +34,7 @@ require_once($CFG->libdir . '/questionlib.php');
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext extends question_type {
+class qtype_aitext_rubric extends question_type {
     /**
      * value from id column of quesiton table
      *
@@ -51,7 +51,7 @@ class qtype_aitext extends question_type {
      */
     public function get_question_test_url($question) {
         $linkparams = $this->get_question_url_params($question);
-        return new moodle_url('/question/type/aitext/questiontestrun.php', $linkparams);
+        return new moodle_url('/question/type/aitext_rubric/questiontestrun.php', $linkparams);
     }
 
     /**
@@ -81,13 +81,13 @@ class qtype_aitext extends question_type {
     public function get_question_options($question) {
         global $DB;
         $question->options = $DB->get_record(
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             ['questionid' => $question->id],
             '*',
             MUST_EXIST
         );
         $question->options->sampleresponses = $DB->get_records(
-            'qtype_aitext_sampleresponses',
+            'qtype_aitext_rubric_sampleresponses',
             ['question' => $question->id],
             'id ASC',
             '*'
@@ -116,11 +116,11 @@ class qtype_aitext extends question_type {
     public function save_question_options($formdata) {
         global $DB;
         $context = $formdata->context;
-        $options = $DB->get_record('qtype_aitext', ['questionid' => $formdata->id]);
+        $options = $DB->get_record('qtype_aitext_rubric', ['questionid' => $formdata->id]);
         if (!$options) {
             $options = new stdClass();
             $options->questionid = $formdata->id;
-            $options->id = $DB->insert_record('qtype_aitext', $options);
+            $options->id = $DB->insert_record('qtype_aitext_rubric', $options);
         }
 
         $options->spellcheck = !empty($formdata->spellcheck);
@@ -148,7 +148,7 @@ class qtype_aitext extends question_type {
         $options->graderinfo = $this->import_or_save_files(
             $formdata->graderinfo,
             $context,
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             'graderinfo',
             $formdata->id
         );
@@ -157,13 +157,13 @@ class qtype_aitext extends question_type {
         $options->responsetemplate = $formdata->responsetemplate['text'];
         $options->responsetemplateformat = $formdata->responsetemplate['format'];
 
-        $DB->update_record('qtype_aitext', $options);
-        $DB->delete_records('qtype_aitext_sampleresponses', ['question' => $formdata->id]);
+        $DB->update_record('qtype_aitext_rubric', $options);
+        $DB->delete_records('qtype_aitext_rubric_sampleresponses', ['question' => $formdata->id]);
         foreach ($formdata->sampleresponses ?? [] as $sr) {
             if (trim((string) $sr) === '') {
                 continue;
             }
-            $DB->insert_record('qtype_aitext_sampleresponses', [
+            $DB->insert_record('qtype_aitext_rubric_sampleresponses', [
                 'question' => $formdata->id,
                 'response' => $sr,
             ]);
@@ -178,7 +178,7 @@ class qtype_aitext extends question_type {
      */
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
-        /**@var qtype_aitext_question  $question */
+        /**@var qtype_aitext_rubric_question  $question */
         $question->responseformat = $questiondata->options->responseformat;
         $question->responsefieldlines = $questiondata->options->responsefieldlines;
         $question->minwordlimit = $questiondata->options->minwordlimit;
@@ -207,12 +207,12 @@ class qtype_aitext extends question_type {
     /**
      * Get the structure from the database
      *
-     * @param qtype_aitext $question
+     * @param qtype_aitext_rubric $question
      * @return array
      */
     public function get_sampleresponses($question) {
         global $DB;
-        $sampleresponses = $DB->get_records('qtype_aitext_sampleresponses', ['question' => $question->id]);
+        $sampleresponses = $DB->get_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id]);
         return $sampleresponses;
     }
 
@@ -225,8 +225,8 @@ class qtype_aitext extends question_type {
      */
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $DB->delete_records('qtype_aitext_sampleresponses', ['question' => $questionid]);
-        $DB->delete_records('qtype_aitext', ['questionid' => $questionid]);
+        $DB->delete_records('qtype_aitext_rubric_sampleresponses', ['question' => $questionid]);
+        $DB->delete_records('qtype_aitext_rubric', ['questionid' => $questionid]);
         parent::delete_question($questionid, $contextid);
     }
 
@@ -238,9 +238,9 @@ class qtype_aitext extends question_type {
      */
     public function response_formats() {
         return [
-            'editor' => get_string('formateditor', 'qtype_aitext'),
-            'plain' => get_string('formatplain', 'qtype_aitext'),
-            'monospaced' => get_string('formatmonospaced', 'qtype_aitext'),
+            'editor' => get_string('formateditor', 'qtype_aitext_rubric'),
+            'plain' => get_string('formatplain', 'qtype_aitext_rubric'),
+            'monospaced' => get_string('formatmonospaced', 'qtype_aitext_rubric'),
         ];
     }
 
@@ -251,8 +251,8 @@ class qtype_aitext extends question_type {
      */
     public function response_required_options() {
         return [
-            1 => get_string('responseisrequired', 'qtype_aitext'),
-            0 => get_string('responsenotrequired', 'qtype_aitext'),
+            1 => get_string('responseisrequired', 'qtype_aitext_rubric'),
+            0 => get_string('responsenotrequired', 'qtype_aitext_rubric'),
         ];
     }
 
@@ -263,11 +263,11 @@ class qtype_aitext extends question_type {
      */
     public function response_sizes() {
         $choices = [
-            2 => get_string('nlines', 'qtype_aitext', 2),
-            3 => get_string('nlines', 'qtype_aitext', 3),
+            2 => get_string('nlines', 'qtype_aitext_rubric', 2),
+            3 => get_string('nlines', 'qtype_aitext_rubric', 3),
         ];
         for ($lines = 5; $lines <= 40; $lines += 5) {
-            $choices[$lines] = get_string('nlines', 'qtype_aitext', $lines);
+            $choices[$lines] = get_string('nlines', 'qtype_aitext_rubric', $lines);
         }
         return $choices;
     }
@@ -296,7 +296,7 @@ class qtype_aitext extends question_type {
      */
     public function attachments_required_options() {
         return [
-            0 => get_string('attachmentsoptional', 'qtype_aitext'),
+            0 => get_string('attachmentsoptional', 'qtype_aitext_rubric'),
             1 => '1',
             2 => '2',
             3 => '3',
@@ -309,7 +309,7 @@ class qtype_aitext extends question_type {
      */
     public function extra_question_fields() {
         return [
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             'responseformat',
             'responsefieldlines',
             'minwordlimit',
@@ -463,7 +463,7 @@ class qtype_aitext extends question_type {
      * @return mixed
      */
     public function menu_name() {
-        if (get_config('qtype_aitext', 'backend') === 'local_ai_manager' && class_exists('\local_ai_manager\local\tenant')) {
+        if (get_config('qtype_aitext_rubric', 'backend') === 'local_ai_manager' && class_exists('\local_ai_manager\local\tenant')) {
             $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
             if (!$tenant->is_tenant_allowed()) {
                 return '';

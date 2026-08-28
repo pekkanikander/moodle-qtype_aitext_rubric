@@ -17,7 +17,7 @@
 /**
  * Serve question type files
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  Marcus Green 2024
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@
 /**
  * Checks file access for aitext questions.
  *
- * @package  qtype_aitext
+ * @package  qtype_aitext_rubric
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -36,10 +36,10 @@
  * @param array $options additional options affecting the file serving
  * @return bool
  */
-function qtype_aitext_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
+function qtype_aitext_rubric_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $CFG;
     require_once($CFG->libdir . '/questionlib.php');
-    question_pluginfile($course, $context, 'qtype_aitext', $filearea, $args, $forcedownload, $options);
+    question_pluginfile($course, $context, 'qtype_aitext_rubric', $filearea, $args, $forcedownload, $options);
 }
 
 /**
@@ -49,27 +49,27 @@ function qtype_aitext_pluginfile($course, $cm, $context, $filearea, $args, $forc
  * @param MoodleQuickForm $mform the wrapped form
  * @return void
  */
-function qtype_aitext_coursemodule_standard_elements($formwrapper, $mform) {
+function qtype_aitext_rubric_coursemodule_standard_elements($formwrapper, $mform) {
     global $DB;
     $current = $formwrapper->get_current();
     if ($current->modulename !== 'quiz') {
         return;
     }
-    $mform->addElement('header', 'qtypeaitextheader', get_string('quizsettingsheader', 'qtype_aitext'));
+    $mform->addElement('header', 'qtypeaitextheader', get_string('quizsettingsheader', 'qtype_aitext_rubric'));
     // 0 here means "no override", not the reserved scaffold level 0.
     $mform->addElement(
         'select',
         'qtypeaitextscaffoldlevel',
-        get_string('scaffoldlevel', 'qtype_aitext'),
+        get_string('scaffoldlevel', 'qtype_aitext_rubric'),
         [
-            0 => get_string('scaffoldquizdefault', 'qtype_aitext'),
-            1 => get_string('scaffoldlevel1', 'qtype_aitext'),
-            2 => get_string('scaffoldlevel2', 'qtype_aitext'),
+            0 => get_string('scaffoldquizdefault', 'qtype_aitext_rubric'),
+            1 => get_string('scaffoldlevel1', 'qtype_aitext_rubric'),
+            2 => get_string('scaffoldlevel2', 'qtype_aitext_rubric'),
         ]
     );
-    $mform->addHelpButton('qtypeaitextscaffoldlevel', 'scaffoldlevel', 'qtype_aitext');
+    $mform->addHelpButton('qtypeaitextscaffoldlevel', 'scaffoldlevel', 'qtype_aitext_rubric');
     if (!empty($current->instance)) {
-        $override = $DB->get_field('qtype_aitext_quiz', 'scaffoldlevel', ['quizid' => $current->instance]);
+        $override = $DB->get_field('qtype_aitext_rubric_quiz', 'scaffoldlevel', ['quizid' => $current->instance]);
         if ($override !== false) {
             $mform->setDefault('qtypeaitextscaffoldlevel', (int) $override);
         }
@@ -83,24 +83,24 @@ function qtype_aitext_coursemodule_standard_elements($formwrapper, $mform) {
  * @param stdClass $course the course
  * @return stdClass the module info, unchanged
  */
-function qtype_aitext_coursemodule_edit_post_actions($moduleinfo, $course) {
+function qtype_aitext_rubric_coursemodule_edit_post_actions($moduleinfo, $course) {
     global $DB;
     if ($moduleinfo->modulename !== 'quiz' || !isset($moduleinfo->qtypeaitextscaffoldlevel)) {
         return $moduleinfo;
     }
     $level = (int) $moduleinfo->qtypeaitextscaffoldlevel;
-    $existing = $DB->get_record('qtype_aitext_quiz', ['quizid' => $moduleinfo->instance]);
+    $existing = $DB->get_record('qtype_aitext_rubric_quiz', ['quizid' => $moduleinfo->instance]);
     if ($level === 0) {
         if ($existing) {
-            $DB->delete_records('qtype_aitext_quiz', ['id' => $existing->id]);
+            $DB->delete_records('qtype_aitext_rubric_quiz', ['id' => $existing->id]);
         }
     } else if ($existing) {
         if ((int) $existing->scaffoldlevel !== $level) {
             $existing->scaffoldlevel = $level;
-            $DB->update_record('qtype_aitext_quiz', $existing);
+            $DB->update_record('qtype_aitext_rubric_quiz', $existing);
         }
     } else {
-        $DB->insert_record('qtype_aitext_quiz', (object) [
+        $DB->insert_record('qtype_aitext_rubric_quiz', (object) [
             'quizid' => $moduleinfo->instance,
             'scaffoldlevel' => $level,
         ]);
@@ -114,9 +114,9 @@ function qtype_aitext_coursemodule_edit_post_actions($moduleinfo, $course) {
  * @param stdClass $cm the course module being deleted
  * @return void
  */
-function qtype_aitext_pre_course_module_delete($cm) {
+function qtype_aitext_rubric_pre_course_module_delete($cm) {
     global $DB;
     if ($cm->modname === 'quiz') {
-        $DB->delete_records('qtype_aitext_quiz', ['quizid' => $cm->instance]);
+        $DB->delete_records('qtype_aitext_rubric_quiz', ['quizid' => $cm->instance]);
     }
 }

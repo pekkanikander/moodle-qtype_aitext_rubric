@@ -16,13 +16,13 @@
 /**
  * Generates the spellcheck diff view.
  *
- * @module     qtype_aitext/spellcheck
+ * @module     qtype_aitext_rubric/spellcheck
  * @copyright  2024, ISB Bayern
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import * as Diff from 'qtype_aitext/diff';
+import * as Diff from 'qtype_aitext_rubric/diff';
 import ModalForm from 'core_form/modalform';
 import {getString as getString} from 'core/str';
 
@@ -69,8 +69,8 @@ export const renderDiff = (readonlyareaselector) => {
         part.value = part.value.replace(/ /g, '&nbsp;');
         const parser = new DOMParser();
         part.value = parser.parseFromString(part.value, 'text/html');
-        const cls = part.added ? 'qtype_aitext_spellcheck_new' :
-            part.removed ? 'qtype_aitext_spellcheck_wrong' : '';
+        const cls = part.added ? 'qtype_aitext_rubric_spellcheck_new' :
+            part.removed ? 'qtype_aitext_rubric_spellcheck_wrong' : '';
         if (part.added || part.removed) {
             span = document.createElement('span');
             span.classList = cls;
@@ -92,9 +92,9 @@ export const renderDiff = (readonlyareaselector) => {
  */
 export const showModalForm = async(readonlyareaselector) => {
     const questionattemptid = document.querySelector(readonlyareaselector).dataset.questionattemptid;
-    const title = await getString('spellcheckedit', 'qtype_aitext');
+    const title = await getString('spellcheckedit', 'qtype_aitext_rubric');
     const modalForm = new ModalForm({
-        formClass: "qtype_aitext\\form\\edit_spellcheck",
+        formClass: "qtype_aitext_rubric\\form\\edit_spellcheck",
         args: {
             questionattemptid,
         },

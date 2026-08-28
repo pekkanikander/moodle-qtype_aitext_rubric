@@ -16,7 +16,7 @@
 /**
  * Take the sample response and make an AJAX request to the LLM.
  *
- * @module     qtype_aitext/responserun
+ * @module     qtype_aitext_rubric/responserun
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -105,11 +105,11 @@ function clickSetup(contextid, Selectors) {
     var strings = {};
     get_strings([{
             "key": "responsetester",
-            "component": 'qtype_aitext'
+            "component": 'qtype_aitext_rubric'
         },
             {
             "key": "sampleresponseempty",
-            "component": 'qtype_aitext'
+            "component": 'qtype_aitext_rubric'
         },
         {
             "key": "loading",
@@ -151,7 +151,7 @@ function clickSetup(contextid, Selectors) {
 
         spinner.classList.remove('hide');
         Ajax.call([{
-            methodname: 'qtype_aitext_fetch_ai_grade',
+            methodname: 'qtype_aitext_rubric_fetch_ai_grade',
             args: {
                 response: sampleresponse.value,
                 defaultmark: defaultmark.value,

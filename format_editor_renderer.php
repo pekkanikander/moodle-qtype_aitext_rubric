@@ -17,8 +17,8 @@
 /**
  * Based on core Moodle qtype_essay originating at the UK Open University
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,14 +29,14 @@
  * @author     Marcus Green 2024 building on work by the UK OU
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext_format_editor_renderer extends qtype_aitext_format_renderer_base {
+class qtype_aitext_rubric_format_editor_renderer extends qtype_aitext_rubric_format_renderer_base {
     /**
      * Specific class name to add to the input element.
      *
      * @return string
      */
     protected function class_name() {
-        return 'qtype_aitext_editor';
+        return 'qtype_aitext_rubric_editor';
     }
 
     /**
@@ -52,13 +52,13 @@ class qtype_aitext_format_editor_renderer extends qtype_aitext_format_renderer_b
     public function response_area_read_only($name, $qa, $step, $lines, $context) {
         $labelbyid = $qa->get_qt_field_name($name) . '_label';
 
-        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext'));
+        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext_rubric'));
         $output = html_writer::tag('h4', $responselabel, ['id' => $labelbyid, 'class' => 'visually-hidden']);
         $output .= html_writer::tag('div', $this->prepare_response($name, $qa, $step, $context), [
             'role' => 'textbox',
             'aria-readonly' => 'true',
             'aria-labelledby' => $labelbyid,
-            'class' => $this->class_name() . ' qtype_aitext_response readonly',
+            'class' => $this->class_name() . ' qtype_aitext_rubric_response readonly',
         ]);
 
         return $output;
@@ -103,13 +103,13 @@ class qtype_aitext_format_editor_renderer extends qtype_aitext_format_renderer_b
             $this->get_filepicker_options($context, $draftitemid)
         );
 
-        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext'));
+        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext_rubric'));
         $output = html_writer::tag('label', $responselabel, [
             'class' => 'visually-hidden',
             'for' => $id,
         ]);
         $output .= html_writer::start_tag('div', ['class' =>
-                $this->class_name() . ' qtype_aitext_response']);
+                $this->class_name() . ' qtype_aitext_rubric_response']);
         $output .= html_writer::tag('div', html_writer::tag(
             'textarea',
             s($response),

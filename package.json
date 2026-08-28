@@ -1,5 +1,5 @@
 {
-  "name": "moodle-qtype_aitext",
+  "name": "moodle-qtype_aitext_rubric",
   "scripts": {
     "deployJsDiff": "cp node_modules/diff/dist/diff.js amd/src/diff.js && grunt amd --force"
   },

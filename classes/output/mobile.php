@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mobile output class for qtype_aitext
+ * Mobile output class for qtype_aitext_rubric
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2018 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace qtype_aitext\output;
+namespace qtype_aitext_rubric\output;
 
 /**
  * Mobile output class for aitext question type
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2018 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,7 +40,7 @@ class mobile {
     public static function mobile_get_aitext($args) {
         global $CFG;
         $args = (object) $args;
-        $templatepath = $CFG->dirroot . "/question/type/aitext/mobile/qtype_aitext.html";
+        $templatepath = $CFG->dirroot . "/question/type/aitext_rubric/mobile/qtype_aitext_rubric.html";
         return [
             'templates' => [
                 [
@@ -48,7 +48,7 @@ class mobile {
                     'html' => file_get_contents($templatepath),
                 ],
             ],
-            'javascript' => file_get_contents($CFG->dirroot . '/question/type/aitext/mobile/mobile.js'),
+            'javascript' => file_get_contents($CFG->dirroot . '/question/type/aitext_rubric/mobile/mobile.js'),
         ];
     }
 }

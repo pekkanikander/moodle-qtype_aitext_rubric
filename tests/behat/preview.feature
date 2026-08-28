@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_preview
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_preview
 Feature: Preview aitext questions
     As a teacher
     In order to check my aitext questions will work for students
@@ -19,8 +19,8 @@ Feature: Preview aitext questions
           | Course       | C1        | Test questions |
     And the following "questions" exist:
           | questioncategory | qtype  | name       | template |
-          | Test questions   | aitext | aitext-001 | editor   |
-          | Test questions   | aitext | aitext-002 | plain    |
+          | Test questions   | aitext_rubric | aitext-001 | editor   |
+          | Test questions   | aitext_rubric | aitext-002 | plain    |
 
   @javascript
   Scenario: Preview an aitext question that uses the HTML editor.

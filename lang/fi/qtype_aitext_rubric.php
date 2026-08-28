@@ -18,7 +18,7 @@
  * Finnish strings for the student-facing rubric feedback. Everything else
  * falls back to English (or an installed language pack).
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2026 Pekka Nikander
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
