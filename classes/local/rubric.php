@@ -45,6 +45,12 @@ namespace qtype_aitext\local;
  * student's answer, or over-length text throws, and the caller falls back
  * to needs-grading. Raw model text is never shown to the student.
  *
+ * The student answer is screened in build_prompt() before it is embedded:
+ * an answer that is over MAX_ANSWER_LENGTH characters, or that contains
+ * the section-marker sequence "===" (a prompt-injection tripwire), throws,
+ * and the caller falls back to needs-grading — so a suspicious answer goes
+ * to a human instead of the model.
+ *
  * This class deliberately uses no Moodle APIs, so it can be exercised
  * without a Moodle bootstrap. Authoring errors throw
  * InvalidArgumentException; model-response errors throw RuntimeException.
@@ -71,6 +77,8 @@ class rubric {
     const MAX_COMMENT_LENGTH = 800;
     /** @var int Maximum length of the next_step text (characters). */
     const MAX_NEXTSTEP_LENGTH = 800;
+    /** @var int Maximum length of a student answer accepted for AI grading (characters). */
+    const MAX_ANSWER_LENGTH = 10000;
 
     /** @var string Language code of the student-facing feedback (e.g. 'fi'). */
     public $language;
@@ -179,6 +187,33 @@ class rubric {
     }
 
     /**
+     * Screen a student answer before it may be embedded in a prompt.
+     *
+     * Deterministic tripwires, fail-closed: an answer that is rejected here
+     * is never sent to the model, and the caller falls back to needs-grading,
+     * putting the answer in front of a human evaluator instead.
+     *
+     * - A hard length cap bounds cost and attack surface independently of
+     *   the (optional, author-set) word limits.
+     * - "===" is the section-marker sequence of build_prompt(). An answer
+     *   containing it could spoof a section boundary and pass off its own
+     *   text as grader instructions, so any occurrence is refused outright.
+     *
+     * @param string $answer the student's answer, already stripped of tags.
+     * @throws \RuntimeException if the answer must not be embedded.
+     */
+    public static function screen_answer(string $answer): void {
+        if (mb_strlen($answer) > self::MAX_ANSWER_LENGTH) {
+            throw new \RuntimeException(
+                'student answer is longer than ' . self::MAX_ANSWER_LENGTH . ' characters');
+        }
+        if (str_contains($answer, '===')) {
+            throw new \RuntimeException(
+                'student answer contains the section-marker sequence "==="');
+        }
+    }
+
+    /**
      * Build the complete grading prompt for one student answer.
      *
      * The prompt is fixed here in code — the admin prompt templates and the
@@ -186,12 +221,18 @@ class rubric {
      * question's aiprompt field is included verbatim as question-specific
      * grading context.
      *
+     * The answer is passed through screen_answer() here, so that no prompt
+     * containing an unscreened answer can be built.
+     *
      * @param string $questiontext the question text, already stripped of tags.
      * @param string $context question-specific grading context (the aiprompt field), may be ''.
      * @param string $answer the student's answer, already stripped of tags.
      * @return string
+     * @throws \RuntimeException if screen_answer() rejects the answer.
      */
     public function build_prompt(string $questiontext, string $context, string $answer): string {
+        self::screen_answer($answer);
+
         $language = $this->language_name();
 
         $prompt = "You are grading one short answer written by a school student. "
@@ -359,7 +400,7 @@ class rubric {
         $result->nextstep = trim($nextstep);
         $result->points = $points;
         $result->maxpoints = $this->max_points();
-        $result->fraction = $result->maxpoints > 0 ? $points / $result->maxpoints : 0.0;
+        $result->fraction = $result->maxpoints > 0 ? (float) ($points / $result->maxpoints) : 0.0;
         return $result;
     }
 

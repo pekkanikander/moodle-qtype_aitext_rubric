@@ -437,10 +437,10 @@ class qtype_aitext_question extends question_graded_automatically {
      * Grade a response against the question's criterion rubric.
      *
      * The mark is sum(level) / sum(max level), computed in PHP; the model
-     * only selects level indices. Any failure — AI unavailable, reply not
-     * parseable, schema violation, fabricated evidence — fails closed to
-     * the needs-grading state with a neutral message. Raw model text is
-     * never shown to the student.
+     * only selects level indices. Any failure — answer refused by
+     * screening, AI unavailable, reply not parseable, schema violation,
+     * fabricated evidence — fails closed to the needs-grading state with a
+     * neutral message. Raw model text is never shown to the student.
      *
      * On success the feedback is rendered here, at grading time, with the
      * fixed rubric_feedback template: the behaviour adapters persist
@@ -463,16 +463,24 @@ class qtype_aitext_question extends question_graded_automatically {
             return [0.0, question_state::$needsgrading];
         }
 
-        $answer = strip_tags((string) $response['answer']);
-        $fullaiprompt = $rubric->build_prompt(
-            strip_tags($this->questiontext ?? ''),
-            (string) $this->aiprompt,
-            $answer
-        );
-        $this->lastaiprompt = $fullaiprompt;
-
         $strings = get_string_manager();
         $failmessage = $strings->get_string('rubric_gradingfailed', 'qtype_aitext', null, $rubric->language);
+
+        $answer = strip_tags((string) $response['answer']);
+        try {
+            $fullaiprompt = $rubric->build_prompt(
+                strip_tags($this->questiontext ?? ''),
+                (string) $this->aiprompt,
+                $answer
+            );
+        } catch (\RuntimeException $e) {
+            // Answer screening tripped (over-length or section-marker spoofing);
+            // route the answer to a human instead of the model.
+            debugging('Student answer refused AI grading: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            $this->lastaicomment = $failmessage;
+            return [0.0, question_state::$needsgrading];
+        }
+        $this->lastaiprompt = $fullaiprompt;
 
         try {
             $modelreply = $this->perform_request($fullaiprompt, 'feedback');
