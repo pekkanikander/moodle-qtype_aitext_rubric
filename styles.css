@@ -1,44 +1,44 @@
 
-.que.aitext textarea.qtype_aitext_response {
+.que.aitext_rubric textarea.qtype_aitext_rubric_response {
     width: 100%;
 }
 
-.que.aitext textarea.qtype_aitext_response.qtype_aitext_plain {
+.que.aitext_rubric textarea.qtype_aitext_rubric_response.qtype_aitext_rubric_plain {
     white-space: pre-wrap;
     font: inherit;
 }
 
-.que.aitext .qtext {
+.que.aitext_rubric .qtext {
     color: inherit;
 }
-.que.aitext .formulation .answer {
+.que.aitext_rubric .formulation .answer {
     font-size: 16px;
 }
-.que.aitext .answer {
+.que.aitext_rubric .answer {
     color: inherit;
 }
 
-.que.aitext textarea.qtype_aitext_response.qtype_aitext_monospaced {
+.que.aitext_rubric textarea.qtype_aitext_rubric_response.qtype_aitext_rubric_monospaced {
     white-space: pre;
     font-family: Andale Mono, Monaco, Courier New, DejaVu Sans Mono, monospace;
 }
 
-.que.aitext .qtype_aitext_response {
+.que.aitext_rubric .qtype_aitext_rubric_response {
     min-height: 3em;
 }
 
-.que.aitext .qtype_aitext_response.readonly {
+.que.aitext_rubric .qtype_aitext_rubric_response.readonly {
     background-color: white;
 }
 
-.que.aitext div.qtype_aitext_response textarea {
+.que.aitext_rubric div.qtype_aitext_rubric_response textarea {
     width: 100%;
 }
 
-.que.aitext .ablock .filemanager .fp-restrictions {
+.que.aitext_rubric .ablock .filemanager .fp-restrictions {
     margin-top: 1em;
 }
-.qtype_aitext_sampleanswereval {
+.qtype_aitext_rubric_sampleanswereval {
     font-size: 16px;
     margin: 3px;
     padding: 3px;
@@ -47,23 +47,23 @@
     background-color: #ddd;
 }
 
-.qtype_aitext_spellcheck_wrong {
+.qtype_aitext_rubric_spellcheck_wrong {
     color: red;
     text-decoration: line-through;
     font-weight: 400;
 }
 
-.qtype_aitext_spellcheck_new {
+.qtype_aitext_rubric_spellcheck_new {
     color: green;
     font-weight: 800;
 }
 
 /* Criterion-referenced rubric feedback (templates/rubric_feedback.mustache). */
-.qtype_aitext-rubric {
+.qtype_aitext_rubric-rubric {
     margin: 0.5em 0;
 }
 
-.qtype_aitext-rubric-banner {
+.qtype_aitext_rubric-rubric-banner {
     padding: 0.4em 0.6em;
     margin-bottom: 0.8em;
     border-left: 3px solid #8a6d3b;
@@ -72,15 +72,15 @@
     font-size: 0.9em;
 }
 
-.qtype_aitext-rubric-criterion {
+.qtype_aitext_rubric-rubric-criterion {
     margin-bottom: 0.9em;
 }
 
-.qtype_aitext-rubric-title {
+.qtype_aitext_rubric-rubric-title {
     font-weight: bold;
 }
 
-.qtype_aitext-rubric-badge {
+.qtype_aitext_rubric-rubric-badge {
     display: inline-block;
     margin-left: 0.5em;
     padding: 0.1em 0.5em;
@@ -88,40 +88,40 @@
     font-size: 0.85em;
 }
 
-.qtype_aitext-rubric-badge-met {
+.qtype_aitext_rubric-rubric-badge-met {
     background-color: #dff0d8;
     color: #3c763d;
 }
 
-.qtype_aitext-rubric-badge-partial {
+.qtype_aitext_rubric-rubric-badge-partial {
     background-color: #fcf8e3;
     color: #8a6d3b;
 }
 
-.qtype_aitext-rubric-badge-missed {
+.qtype_aitext_rubric-rubric-badge-missed {
     background-color: #f2dede;
     color: #a94442;
 }
 
-.qtype_aitext-rubric-points {
+.qtype_aitext_rubric-rubric-points {
     margin-left: 0.5em;
     font-variant-numeric: tabular-nums;
 }
 
-.qtype_aitext-rubric-label {
+.qtype_aitext_rubric-rubric-label {
     font-weight: bold;
 }
 
-.qtype_aitext-rubric-evidence ul {
+.qtype_aitext_rubric-rubric-evidence ul {
     margin: 0.1em 0 0.3em;
 }
 
-.qtype_aitext-rubric-comment {
+.qtype_aitext_rubric-rubric-comment {
     font-style: italic;
 }
 
-.qtype_aitext-rubric-nextstep,
-.qtype_aitext-rubric-total {
+.qtype_aitext_rubric-rubric-nextstep,
+.qtype_aitext_rubric-rubric-total {
     margin-top: 0.6em;
     padding-top: 0.4em;
     border-top: 1px solid #ddd;

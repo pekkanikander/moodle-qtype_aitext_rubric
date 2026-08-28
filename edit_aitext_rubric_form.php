@@ -17,8 +17,8 @@
 /**
  * Defines the editing form for the aitext question type.
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2023 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@
   * @author  2023 Marcus Green
   * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
   */
-class qtype_aitext_edit_form extends question_edit_form {
+class qtype_aitext_rubric_edit_form extends question_edit_form {
     /**
      * Add aitext specific form fields for editing
      *
@@ -40,8 +40,8 @@ class qtype_aitext_edit_form extends question_edit_form {
         global $PAGE;
         // Get the question ID from the URL or session.
         $questionid = optional_param('id', 0, PARAM_INT);
-        /** @var qtype_aitext $qtype */
-        $qtype = question_bank::get_qtype('aitext');
+        /** @var qtype_aitext_rubric $qtype */
+        $qtype = question_bank::get_qtype('aitext_rubric');
         $mform->removeelement('generalfeedback');
         $mform->removeelement('questiontext');
         $mform->addElement(
@@ -53,26 +53,26 @@ class qtype_aitext_edit_form extends question_edit_form {
         );
 
         // Spelling correction.
-        $mform->addElement('checkbox', 'spellcheck', get_string('automatic_spellcheck', 'qtype_aitext'));
+        $mform->addElement('checkbox', 'spellcheck', get_string('automatic_spellcheck', 'qtype_aitext_rubric'));
 
         // Ai prompt.
         $mform->addElement(
             'textarea',
             'aiprompt',
-            get_string('aiprompt', 'qtype_aitext'),
+            get_string('aiprompt', 'qtype_aitext_rubric'),
             ['maxlen' => 50, 'rows' => 5, 'size' => 30]
         );
         $mform->setType('aiprompt', PARAM_RAW);
-        $mform->setDefault('aiprompt', get_config('qtype_aitext', 'defaultprompt'));
-        $mform->addHelpButton('aiprompt', 'aiprompt', 'qtype_aitext');
-        $mform->addRule('aiprompt', get_string('aipromptmissing', 'qtype_aitext'), 'required');
+        $mform->setDefault('aiprompt', get_config('qtype_aitext_rubric', 'defaultprompt'));
+        $mform->addHelpButton('aiprompt', 'aiprompt', 'qtype_aitext_rubric');
+        $mform->addRule('aiprompt', get_string('aipromptmissing', 'qtype_aitext_rubric'), 'required');
 
         // Expert mode template button (only shown when enable_expertmode setting is enabled).
-        if (get_config('qtype_aitext', 'enable_expertmode')) {
+        if (get_config('qtype_aitext_rubric', 'enable_expertmode')) {
             $mform->addElement(
                 'button',
                 'expertmodetemplatebtn',
-                get_string('useexpertmodetemplate', 'qtype_aitext')
+                get_string('useexpertmodetemplate', 'qtype_aitext_rubric')
             );
         }
 
@@ -80,52 +80,52 @@ class qtype_aitext_edit_form extends question_edit_form {
         $mform->addElement(
             'textarea',
             'markscheme',
-            get_string('markscheme', 'qtype_aitext'),
+            get_string('markscheme', 'qtype_aitext_rubric'),
             ['maxlen' => 50, 'rows' => 6, 'size' => 30]
         );
         $mform->setType('markscheme', PARAM_RAW);
-        $mform->setDefault('markscheme', get_config('qtype_aitext', 'defaultmarksscheme'));
-        $mform->addHelpButton('markscheme', 'markscheme', 'qtype_aitext');
-        if (get_config('qtype_aitext', 'markprompt_required') == 1) {
-            $mform->addRule('markscheme', get_string('markschememissing', 'qtype_aitext'), 'required');
+        $mform->setDefault('markscheme', get_config('qtype_aitext_rubric', 'defaultmarksscheme'));
+        $mform->addHelpButton('markscheme', 'markscheme', 'qtype_aitext_rubric');
+        if (get_config('qtype_aitext_rubric', 'markprompt_required') == 1) {
+            $mform->addRule('markscheme', get_string('markschememissing', 'qtype_aitext_rubric'), 'required');
         }
 
         // Criterion-referenced rubric (JSON). Mutually exclusive with the mark scheme.
         $mform->addElement(
             'textarea',
             'rubric',
-            get_string('rubric', 'qtype_aitext'),
+            get_string('rubric', 'qtype_aitext_rubric'),
             ['rows' => 12, 'size' => 30]
         );
         $mform->setType('rubric', PARAM_RAW);
-        $mform->addHelpButton('rubric', 'rubric', 'qtype_aitext');
+        $mform->addHelpButton('rubric', 'rubric', 'qtype_aitext_rubric');
 
         // Scaffold-then-fade: an optional skeleton shown above the answer box.
         $mform->addElement(
             'select',
             'scaffoldlevel',
-            get_string('scaffoldlevel', 'qtype_aitext'),
+            get_string('scaffoldlevel', 'qtype_aitext_rubric'),
             [
-                2 => get_string('scaffoldlevel2', 'qtype_aitext'),
-                1 => get_string('scaffoldlevel1', 'qtype_aitext'),
+                2 => get_string('scaffoldlevel2', 'qtype_aitext_rubric'),
+                1 => get_string('scaffoldlevel1', 'qtype_aitext_rubric'),
             ]
         );
         $mform->setDefault('scaffoldlevel', 2);
-        $mform->addHelpButton('scaffoldlevel', 'scaffoldlevel', 'qtype_aitext');
+        $mform->addHelpButton('scaffoldlevel', 'scaffoldlevel', 'qtype_aitext_rubric');
         $mform->addElement(
             'textarea',
             'scaffold',
-            get_string('scaffold', 'qtype_aitext'),
+            get_string('scaffold', 'qtype_aitext_rubric'),
             ['rows' => 8, 'size' => 30]
         );
         $mform->setType('scaffold', PARAM_RAW);
-        $mform->addHelpButton('scaffold', 'scaffold', 'qtype_aitext');
+        $mform->addHelpButton('scaffold', 'scaffold', 'qtype_aitext_rubric');
         $mform->hideIf('scaffold', 'scaffoldlevel', 'eq', '2');
 
         $models = explode(",", get_config('tool_aiconnect', 'model'));
         if (count($models) > 1) {
             $models = array_combine($models, $models);
-            $mform->addElement('select', 'model', get_string('model', 'qtype_aitext'), $models);
+            $mform->addElement('select', 'model', get_string('model', 'qtype_aitext_rubric'), $models);
         } else {
             $mform->addElement('hidden', 'model', $models[0]);
         }
@@ -143,20 +143,20 @@ class qtype_aitext_edit_form extends question_edit_form {
         $mform->addElement('html', '</div>');
 
         // Add repeated sample answer options along with the field for returned responses.
-        $mform->addElement('header', 'responsetest', get_string('responsetester', 'qtype_aitext'));
-        $mform->addHelpButton('responsetest', 'responsetesthelp', 'qtype_aitext');
+        $mform->addElement('header', 'responsetest', get_string('responsetester', 'qtype_aitext_rubric'));
+        $mform->addHelpButton('responsetest', 'responsetesthelp', 'qtype_aitext_rubric');
 
         $answeroptions = ['maxlen' => 50, 'rows' => 6, 'size' => 30];
         $evaloptions = ['cols' => 50, 'rows' => 5, 'disabled' => 'disabled' ];
         $repeatarray = [
             $mform->createElement('static', 'spinner', '', '<div class =" col-md-9" id="id_spinner"></div>'),
-            $mform->createElement('textarea', 'sampleresponses', get_string('sampleresponse', 'qtype_aitext'), $answeroptions),
+            $mform->createElement('textarea', 'sampleresponses', get_string('sampleresponse', 'qtype_aitext_rubric'), $answeroptions),
             // Wrap the evaluation output in the same grid column width as Moodle form items (label + element pattern).
             $mform->createElement(
                 'html',
                 '<div class="form-group row fitem">'
                     . '<div class="col-md-3 col-form-label d-flex pb-0 pt-0">'
-                        . '<label>' . get_string('sampleresponseeval', 'qtype_aitext') . '</label>'
+                        . '<label>' . get_string('sampleresponseeval', 'qtype_aitext_rubric') . '</label>'
                     . '</div>'
                     . '<div class="col-md-9 form-inline felement">'
                         . '<div id="id_sampleresponseeval" class="form-control w-100" style="min-height:5em; overflow:auto;"></div>'
@@ -164,8 +164,8 @@ class qtype_aitext_edit_form extends question_edit_form {
                 . '</div>'
             ),
             // Keep button name/id consistent with JS selectors (sampleresponsebtn_*).
-            $mform->createElement('button', 'sampleresponsebtn', get_string('sampleresponseevaluate', 'qtype_aitext')),
-            $mform->createElement('submit', 'delete', get_string('deletesample', 'qtype_aitext'), 0),
+            $mform->createElement('button', 'sampleresponsebtn', get_string('sampleresponseevaluate', 'qtype_aitext_rubric')),
+            $mform->createElement('submit', 'delete', get_string('deletesample', 'qtype_aitext_rubric'), 0),
             $mform->createElement('html', '<hr/>'),
         ];
 
@@ -183,28 +183,28 @@ class qtype_aitext_edit_form extends question_edit_form {
             'option_repeats',
             'option_add_fields',
             1,
-            get_string('addsample', 'qtype_aitext'),
+            get_string('addsample', 'qtype_aitext_rubric'),
             true,
             'delete',
         );
 
         $mform->setType('option', PARAM_CLEANHTML);
 
-        $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_aitext'));
+        $mform->addElement('header', 'responseoptions', get_string('responseoptions', 'qtype_aitext_rubric'));
         $mform->setExpanded('responseoptions');
 
         $mform->addElement(
             'select',
             'responseformat',
-            get_string('responseformat', 'qtype_aitext'),
+            get_string('responseformat', 'qtype_aitext_rubric'),
             $qtype->response_formats()
         );
-        $mform->setDefault('responseformat', get_config('qtype_aitext', 'responseformat'));
+        $mform->setDefault('responseformat', get_config('qtype_aitext_rubric', 'responseformat'));
 
         $mform->addElement(
             'select',
             'responsefieldlines',
-            get_string('responsefieldlines', 'qtype_aitext'),
+            get_string('responsefieldlines', 'qtype_aitext_rubric'),
             $qtype->response_sizes()
         );
         $mform->setDefault('responsefieldlines', $this->get_default_value('responsefieldlines', 10));
@@ -216,8 +216,8 @@ class qtype_aitext_edit_form extends question_edit_form {
         $mform->setType('minwordlimit', PARAM_INT);
         $mingrp[] = $mform->createElement('checkbox', 'minwordenabled', '', get_string('enable'));
         $mform->setDefault('minwordenabled', 0);
-        $mform->addGroup($mingrp, 'mingroup', get_string('minwordlimit', 'qtype_aitext'), ' ', false);
-        $mform->addHelpButton('mingroup', 'minwordlimit', 'qtype_aitext');
+        $mform->addGroup($mingrp, 'mingroup', get_string('minwordlimit', 'qtype_aitext_rubric'), ' ', false);
+        $mform->addHelpButton('mingroup', 'minwordlimit', 'qtype_aitext_rubric');
         $mform->disabledIf('minwordlimit', 'minwordenabled', 'notchecked');
         $mform->hideIf('mingroup', 'responseformat', 'eq', 'noinline');
 
@@ -225,44 +225,44 @@ class qtype_aitext_edit_form extends question_edit_form {
         $mform->setType('maxwordlimit', PARAM_INT);
         $maxgrp[] = $mform->createElement('checkbox', 'maxwordenabled', '', get_string('enable'));
         $mform->setDefault('maxwordenabled', 0);
-        $mform->addGroup($maxgrp, 'maxgroup', get_string('maxwordlimit', 'qtype_aitext'), ' ', false);
-        $mform->addHelpButton('maxgroup', 'maxwordlimit', 'qtype_aitext');
+        $mform->addGroup($maxgrp, 'maxgroup', get_string('maxwordlimit', 'qtype_aitext_rubric'), ' ', false);
+        $mform->addHelpButton('maxgroup', 'maxwordlimit', 'qtype_aitext_rubric');
         $mform->disabledIf('maxwordlimit', 'maxwordenabled', 'notchecked');
         $mform->hideIf('maxgroup', 'responseformat', 'eq', 'noinline');
 
-        $mform->addElement('header', 'responsetemplateheader', get_string('responsetemplateheader', 'qtype_aitext'));
+        $mform->addElement('header', 'responsetemplateheader', get_string('responsetemplateheader', 'qtype_aitext_rubric'));
         $mform->addElement(
             'editor',
             'responsetemplate',
-            get_string('responsetemplate', 'qtype_aitext'),
+            get_string('responsetemplate', 'qtype_aitext_rubric'),
             ['rows' => 10],
             array_merge($this->editoroptions, ['maxfiles' => 0])
         );
-        $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_aitext');
+        $mform->addHelpButton('responsetemplate', 'responsetemplate', 'qtype_aitext_rubric');
 
-        $mform->addElement('header', 'graderinfoheader', get_string('graderinfoheader', 'qtype_aitext'));
+        $mform->addElement('header', 'graderinfoheader', get_string('graderinfoheader', 'qtype_aitext_rubric'));
         $mform->setExpanded('graderinfoheader');
         $mform->addElement(
             'editor',
             'graderinfo',
-            get_string('graderinfo', 'qtype_aitext'),
+            get_string('graderinfo', 'qtype_aitext_rubric'),
             ['rows' => 10],
             $this->editoroptions
         );
 
         // Load any JS that we need to make things happen, specifically the prompt tester.
-        $PAGE->requires->js_call_amd('qtype_aitext/responserun', 'init', [$this->context->id]);
+        $PAGE->requires->js_call_amd('qtype_aitext_rubric/responserun', 'init', [$this->context->id]);
 
         // Initialize expert mode template button.
-        $experttemplate = get_config('qtype_aitext', 'prompttemplate');
+        $experttemplate = get_config('qtype_aitext_rubric', 'prompttemplate');
         if (empty($experttemplate)) {
-            $experttemplate = get_string('defaultprompttemplate', 'qtype_aitext');
+            $experttemplate = get_string('defaultprompttemplate', 'qtype_aitext_rubric');
         }
-        $roleprompt = get_config('qtype_aitext', 'roleprompt');
+        $roleprompt = get_config('qtype_aitext_rubric', 'roleprompt');
         if (empty($roleprompt)) {
-            $roleprompt = get_string('defaultroleprompt', 'qtype_aitext');
+            $roleprompt = get_string('defaultroleprompt', 'qtype_aitext_rubric');
         }
-        $PAGE->requires->js_call_amd('qtype_aitext/expertmode', 'init', [$experttemplate, $roleprompt]);
+        $PAGE->requires->js_call_amd('qtype_aitext_rubric/expertmode', 'init', [$experttemplate, $roleprompt]);
     }
 
     /**
@@ -323,7 +323,7 @@ class qtype_aitext_edit_form extends question_edit_form {
         $question->graderinfo['text'] = file_prepare_draft_area(
             $draftid,
             $this->context->id,
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             'graderinfo',
             !empty($question->id) ? (int) $question->id : null,
             $this->fileoptions,
@@ -349,12 +349,12 @@ class qtype_aitext_edit_form extends question_edit_form {
 
         if (trim($fromform['rubric'] ?? '') !== '') {
             try {
-                \qtype_aitext\local\rubric::parse($fromform['rubric']);
+                \qtype_aitext_rubric\local\rubric::parse($fromform['rubric']);
             } catch (\InvalidArgumentException $e) {
-                $errors['rubric'] = get_string('err_rubricinvalid', 'qtype_aitext', $e->getMessage());
+                $errors['rubric'] = get_string('err_rubricinvalid', 'qtype_aitext_rubric', $e->getMessage());
             }
             if (trim($fromform['markscheme'] ?? '') !== '') {
-                $errors['rubric'] = get_string('err_rubricandmarkscheme', 'qtype_aitext');
+                $errors['rubric'] = get_string('err_rubricandmarkscheme', 'qtype_aitext_rubric');
             }
         }
 
@@ -363,10 +363,10 @@ class qtype_aitext_edit_form extends question_edit_form {
                 $errors['mingroup'] = get_string('err_numeric', 'form');
             }
             if ($fromform['minwordlimit'] < 0) {
-                $errors['mingroup'] = get_string('err_minwordlimitnegative', 'qtype_aitext');
+                $errors['mingroup'] = get_string('err_minwordlimitnegative', 'qtype_aitext_rubric');
             }
             if (!$fromform['minwordlimit']) {
-                $errors['mingroup'] = get_string('err_minwordlimit', 'qtype_aitext');
+                $errors['mingroup'] = get_string('err_minwordlimit', 'qtype_aitext_rubric');
             }
         }
         if (isset($fromform['maxwordenabled'])) {
@@ -374,10 +374,10 @@ class qtype_aitext_edit_form extends question_edit_form {
                 $errors['maxgroup'] = get_string('err_numeric', 'form');
             }
             if ($fromform['maxwordlimit'] < 0) {
-                $errors['maxgroup'] = get_string('err_maxwordlimitnegative', 'qtype_aitext');
+                $errors['maxgroup'] = get_string('err_maxwordlimitnegative', 'qtype_aitext_rubric');
             }
             if (!$fromform['maxwordlimit']) {
-                $errors['maxgroup'] = get_string('err_maxwordlimit', 'qtype_aitext');
+                $errors['maxgroup'] = get_string('err_maxwordlimit', 'qtype_aitext_rubric');
             }
         }
         if (isset($fromform['maxwordenabled']) && isset($fromform['minwordenabled'])) {
@@ -385,7 +385,7 @@ class qtype_aitext_edit_form extends question_edit_form {
                 $fromform['maxwordlimit'] < $fromform['minwordlimit'] &&
                 $fromform['maxwordlimit'] > 0 && $fromform['minwordlimit'] > 0
             ) {
-                $errors['maxgroup'] = get_string('err_maxminmismatch', 'qtype_aitext');
+                $errors['maxgroup'] = get_string('err_maxminmismatch', 'qtype_aitext_rubric');
             }
         }
 
@@ -397,6 +397,6 @@ class qtype_aitext_edit_form extends question_edit_form {
      * @return string
      */
     public function qtype() {
-        return 'aitext';
+        return 'aitext_rubric';
     }
 }

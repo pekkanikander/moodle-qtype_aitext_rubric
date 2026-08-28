@@ -17,7 +17,7 @@
 /**
  * Hook listener callbacks.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2025 ISB Bayern
  * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,6 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 $callbacks = [
         [
                 'hook' => \local_ai_manager\hook\purpose_usage::class,
-                'callback' => \qtype_aitext\local\hook_callbacks::class . '::handle_purpose_usage',
+                'callback' => \qtype_aitext_rubric\local\hook_callbacks::class . '::handle_purpose_usage',
         ],
 ];

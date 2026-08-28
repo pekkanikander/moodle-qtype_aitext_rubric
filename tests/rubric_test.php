@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext;
+namespace qtype_aitext_rubric;
 
-use qtype_aitext\local\rubric;
+use qtype_aitext_rubric\local\rubric;
 
 /**
  * Unit tests for the criterion-referenced rubric class.
@@ -24,10 +24,10 @@ use qtype_aitext\local\rubric;
  * The rubric class deliberately uses no Moodle APIs, so these tests
  * need no database and extend basic_testcase.
  *
- * @package qtype_aitext
+ * @package qtype_aitext_rubric
  * @copyright 2026 Pekka Nikander
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers \qtype_aitext\local\rubric
+ * @covers \qtype_aitext_rubric\local\rubric
  */
 final class rubric_test extends \basic_testcase {
 

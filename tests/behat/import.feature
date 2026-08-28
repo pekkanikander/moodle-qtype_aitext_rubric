@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_import
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_import
 Feature: Test importing aitext questions
     As a teacher
     In order to reuse aitext questions
@@ -19,7 +19,7 @@ Feature: Test importing aitext questions
   Scenario: import aitext question.
     When I am on the "Course 1" "core_question > course question import" page logged in as teacher
     And I set the field "id_format_xml" to "1"
-    And I upload "question/type/aitext/tests/fixtures/aitext_past_tense.xml" file to "Import" filemanager
+    And I upload "question/type/aitext_rubric/tests/fixtures/aitext_past_tense.xml" file to "Import" filemanager
     And I press "id_submitbutton"
     Then I should see "Parsing questions from import file."
     And I should see "Importing 1 questions from file"

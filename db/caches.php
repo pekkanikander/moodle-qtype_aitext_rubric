@@ -19,7 +19,7 @@
  *
  * Documentation: {@link https://docs.moodle.org/dev/Cache_API}
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @category   cache
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

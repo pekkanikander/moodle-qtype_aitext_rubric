@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext;
+namespace qtype_aitext_rubric;
 
 use advanced_testcase;
 use backup_controller;
@@ -31,12 +31,12 @@ require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/mod/quiz/tests/quiz_question_helper_test_trait.php');
-require_once($CFG->dirroot . '/question/type/aitext/tests/helper.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/tests/helper.php');
 
 /**
  * Test repeated restore functionality specifically for aitext question type.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @category   test
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -73,9 +73,9 @@ final class aitext_repeated_restore_test extends advanced_testcase {
 
         // Create a quiz with 2 identical but separate aitext questions.
         $quiz1 = $this->create_test_quiz($course1);
-        $question1 = $questiongenerator->create_question('aitext', 'editor', ['category' => $cat->id]);
+        $question1 = $questiongenerator->create_question('aitext_rubric', 'editor', ['category' => $cat->id]);
         quiz_add_quiz_question($question1->id, $quiz1, 0);
-        $question2 = $questiongenerator->create_question('aitext', 'editor', ['category' => $cat->id]);
+        $question2 = $questiongenerator->create_question('aitext_rubric', 'editor', ['category' => $cat->id]);
         quiz_add_quiz_question($question2->id, $quiz1, 0);
 
         // Update question2 to have the same times and stamp as question1.

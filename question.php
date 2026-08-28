@@ -17,8 +17,8 @@
 /**
  * aitext question definition class.
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/question/type/questionbase.php');
  * @copyright  2025 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext_question extends question_graded_automatically {
+class qtype_aitext_rubric_question extends question_graded_automatically {
     /**
      * Plain text or html
      * @var string
@@ -124,7 +124,7 @@ class qtype_aitext_question extends question_graded_automatically {
     /**
      * Criterion-referenced rubric as JSON, or empty/null for upstream
      * behaviour. When present, grading goes through
-     * \qtype_aitext\local\rubric instead of the markscheme path.
+     * \qtype_aitext_rubric\local\rubric instead of the markscheme path.
      * @var string|null
      */
     public $rubric;
@@ -174,7 +174,7 @@ class qtype_aitext_question extends question_graded_automatically {
 
     /**
      * The scaffold level in effect for this display: a per-quiz override
-     * from qtype_aitext_quiz when the question is shown inside a quiz,
+     * from qtype_aitext_rubric_quiz when the question is shown inside a quiz,
      * otherwise the question's own scaffoldlevel.
      *
      * @param question_display_options $options the options being rendered with.
@@ -186,7 +186,7 @@ class qtype_aitext_question extends question_graded_automatically {
             // Wrong-module cmids (e.g. a question bank preview) return false.
             $cm = get_coursemodule_from_id('quiz', $options->context->instanceid);
             if ($cm) {
-                $override = $DB->get_field('qtype_aitext_quiz', 'scaffoldlevel', ['quizid' => $cm->instance]);
+                $override = $DB->get_field('qtype_aitext_rubric_quiz', 'scaffoldlevel', ['quizid' => $cm->instance]);
                 if ($override !== false) {
                     return (int) $override;
                 }
@@ -304,14 +304,14 @@ class qtype_aitext_question extends question_graded_automatically {
             return "AI Feedback";
         }
         $contextid = $this->get_contextid_for_ai_request();
-        $backend = get_config('qtype_aitext', 'backend');
+        $backend = get_config('qtype_aitext_rubric', 'backend');
         if ($backend == 'local_ai_manager') {
             $manager = new local_ai_manager\manager($purpose);
-            $llmresponse = (object) $manager->perform_request($prompt, 'qtype_aitext', $contextid);
+            $llmresponse = (object) $manager->perform_request($prompt, 'qtype_aitext_rubric', $contextid);
             if ($llmresponse->get_code() !== 200) {
                 throw new moodle_exception(
                     'err_retrievingfeedback',
-                    'qtype_aitext',
+                    'qtype_aitext_rubric',
                     '',
                     $llmresponse->get_errormessage(),
                     $llmresponse->get_debuginfo()
@@ -336,9 +336,9 @@ class qtype_aitext_question extends question_graded_automatically {
                 !is_array($responsedata) || !array_key_exists('generatedcontent', $responsedata)
             ) {
                 if (is_null($responsedata) || is_null($responsedata['generatedcontent'])) {
-                    throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext');
+                    throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext_rubric');
                 } else {
-                    throw new moodle_exception('err_retrievingfeedback', 'qtype_aitext');
+                    throw new moodle_exception('err_retrievingfeedback', 'qtype_aitext_rubric');
                 }
             }
             $this->modelused = $llmresponse->get_model_used();
@@ -350,10 +350,10 @@ class qtype_aitext_question extends question_graded_automatically {
                 $this->modelused = $llmresponse['response']['model'] ?? null;
                 return $llmresponse['response']['choices'][0]['message']['content'];
             } else {
-                throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext', '');
+                throw new moodle_exception('err_retrievingfeedback_checkconfig', 'qtype_aitext_rubric', '');
             }
         }
-        throw new moodle_exception('err_invalidbackend', 'qtype_aitext');
+        throw new moodle_exception('err_invalidbackend', 'qtype_aitext_rubric');
     }
 
     /**
@@ -416,7 +416,7 @@ class qtype_aitext_question extends question_graded_automatically {
         } catch (\moodle_exception $e) {
             // AI unavailable (quota, capability, tenant, etc.) — defer to manual grading.
             debugging('AI grading unavailable, deferring to manual grading: ' . $e->getMessage(), DEBUG_DEVELOPER);
-            $this->lastaicomment = get_string('err_nofeedback', 'qtype_aitext');
+            $this->lastaicomment = get_string('err_nofeedback', 'qtype_aitext_rubric');
             return [0.0, question_state::$needsgrading];
         }
         $contentobject = $this->process_feedback($feedback);
@@ -455,16 +455,16 @@ class qtype_aitext_question extends question_graded_automatically {
         global $OUTPUT;
 
         try {
-            $rubric = \qtype_aitext\local\rubric::parse($this->rubric);
+            $rubric = \qtype_aitext_rubric\local\rubric::parse($this->rubric);
         } catch (\InvalidArgumentException $e) {
             // Broken authored rubric; should be impossible past form/compiler validation.
             debugging('Invalid rubric on question ' . $this->id . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
-            $this->lastaicomment = get_string('rubric_gradingfailed', 'qtype_aitext');
+            $this->lastaicomment = get_string('rubric_gradingfailed', 'qtype_aitext_rubric');
             return [0.0, question_state::$needsgrading];
         }
 
         $strings = get_string_manager();
-        $failmessage = $strings->get_string('rubric_gradingfailed', 'qtype_aitext', null, $rubric->language);
+        $failmessage = $strings->get_string('rubric_gradingfailed', 'qtype_aitext_rubric', null, $rubric->language);
 
         $answer = strip_tags((string) $response['answer']);
         try {
@@ -501,7 +501,7 @@ class qtype_aitext_question extends question_graded_automatically {
 
         $this->lastrubricresult = $result;
         $this->lastaicomment = $OUTPUT->render_from_template(
-            'qtype_aitext/rubric_feedback',
+            'qtype_aitext_rubric/rubric_feedback',
             $this->export_rubric_feedback($rubric, $result)
         );
         return [$result->fraction, question_state::graded_state_for_fraction($result->fraction)];
@@ -515,14 +515,14 @@ class qtype_aitext_question extends question_graded_automatically {
      * criterion and the total. Labels are fetched in the rubric's language
      * (the question's language), not the user's interface language.
      *
-     * @param \qtype_aitext\local\rubric $rubric the parsed rubric.
+     * @param \qtype_aitext_rubric\local\rubric $rubric the parsed rubric.
      * @param stdClass $result a validated result from rubric::grade().
      * @return array template context.
      */
-    private function export_rubric_feedback(\qtype_aitext\local\rubric $rubric, stdClass $result): array {
+    private function export_rubric_feedback(\qtype_aitext_rubric\local\rubric $rubric, stdClass $result): array {
         $strings = get_string_manager();
         $lang = $rubric->language;
-        $str = fn($identifier, $a = null) => $strings->get_string($identifier, 'qtype_aitext', $a, $lang);
+        $str = fn($identifier, $a = null) => $strings->get_string($identifier, 'qtype_aitext_rubric', $a, $lang);
 
         $model = $this->modelused ?: ($this->model ?: '');
 
@@ -595,23 +595,23 @@ class qtype_aitext_question extends question_graded_automatically {
      * @return string The complete prompt with all placeholders replaced.
      */
     private function build_template_prompt(string $response, string $aiprompt, float $defaultmark, string $markscheme): string {
-        $template = get_config('qtype_aitext', 'prompttemplate');
+        $template = get_config('qtype_aitext_rubric', 'prompttemplate');
         if (empty($template)) {
-            $template = get_string('defaultprompttemplate', 'qtype_aitext');
+            $template = get_string('defaultprompttemplate', 'qtype_aitext_rubric');
         }
 
-        $roleprompt = get_config('qtype_aitext', 'roleprompt');
+        $roleprompt = get_config('qtype_aitext_rubric', 'roleprompt');
         if (empty($roleprompt)) {
-            $roleprompt = get_string('defaultroleprompt', 'qtype_aitext');
+            $roleprompt = get_string('defaultroleprompt', 'qtype_aitext_rubric');
         }
 
-        $jsonprompt = get_config('qtype_aitext', 'jsonprompt') ?? '';
+        $jsonprompt = get_config('qtype_aitext_rubric', 'jsonprompt') ?? '';
 
         $language = $this->determine_output_language($aiprompt);
 
         $markschemetext = trim($markscheme);
         if (empty($markschemetext)) {
-            $markschemetext = get_string('nomarkscheme', 'qtype_aitext');
+            $markschemetext = get_string('nomarkscheme', 'qtype_aitext_rubric');
         }
 
         $cleanedaiprompt = $this->clean_legacy_tags($aiprompt);
@@ -669,7 +669,7 @@ class qtype_aitext_question extends question_graded_automatically {
             return $matches[1];
         }
 
-        if (get_config('qtype_aitext', 'translatepostfix')) {
+        if (get_config('qtype_aitext_rubric', 'translatepostfix')) {
             return current_language();
         }
 
@@ -702,7 +702,7 @@ class qtype_aitext_question extends question_graded_automatically {
      * @throws coding_exception
      */
     public function build_full_ai_spellchecking_prompt(string $response): string {
-        return get_string('spellcheck_prompt', 'qtype_aitext') . ($response);
+        return get_string('spellcheck_prompt', 'qtype_aitext_rubric') . ($response);
     }
 
     /**
@@ -718,7 +718,7 @@ class qtype_aitext_question extends question_graded_automatically {
         // blabla like "Here is the JSON you asked for: ...". So we need to extract the JSON part.
         if (empty($feedback)) {
             $contentobject = new \stdClass();
-            $contentobject->feedback = get_string('err_nofeedback', 'qtype_aitext');
+            $contentobject->feedback = get_string('err_nofeedback', 'qtype_aitext_rubric');
             $contentobject->marks = null;
             return $contentobject;
         }
@@ -731,7 +731,7 @@ class qtype_aitext_question extends question_graded_automatically {
             $contentobject->feedback = $feedback;
             $contentobject->marks = null;
         }
-        $disclaimer = get_config('qtype_aitext', 'disclaimer');
+        $disclaimer = get_config('qtype_aitext_rubric', 'disclaimer');
         // The format_text will interprete a backslash as escaping character. To preserve one we need to double them first.
         // This is especially important so that the mathjax filter still has a chance to have its delimiters \( ... \).
         // Limit the number of backslashes to not double them if they are already doubled.
@@ -823,11 +823,11 @@ class qtype_aitext_question extends question_graded_automatically {
         if (current_language() == 'en') {
             return $text;
         }
-        if (get_config('qtype_aitext', 'translatepostfix') == 0) {
+        if (get_config('qtype_aitext_rubric', 'translatepostfix') == 0) {
             return $text;
         }
 
-        $cache = cache::make('qtype_aitext', 'stringdata');
+        $cache = cache::make('qtype_aitext_rubric', 'stringdata');
         if (($translation = $cache->get(current_language() . '_' . $text)) === false) {
             $prompt = 'translate "' . $text . '" into ' . current_language() .
                     'Only return the exact text, do not wrap it in other text.';
@@ -845,7 +845,7 @@ class qtype_aitext_question extends question_graded_automatically {
      * @return renderer_base the response-format-specific renderer.
      */
     public function get_format_renderer(moodle_page $page) {
-        return  $page->get_renderer('qtype_aitext', 'format_' . $this->responseformat);
+        return  $page->get_renderer('qtype_aitext_rubric', 'format_' . $this->responseformat);
     }
     /**
      * Get expected data types
@@ -1006,7 +1006,7 @@ class qtype_aitext_question extends question_graded_automatically {
         } else if ($component == 'question' && $filearea == 'response_answer') {
             // Response attachments visible if the question has them.
             return $this->responseformat === 'editorfilepicker';
-        } else if ($component == 'qtype_aitext' && $filearea == 'graderinfo') {
+        } else if ($component == 'qtype_aitext_rubric' && $filearea == 'graderinfo') {
             return $options->manualcomment && $args[0] == $this->id;
         } else {
             return parent::check_file_access(
@@ -1063,13 +1063,13 @@ class qtype_aitext_question extends question_graded_automatically {
         if ($this->maxwordlimit && $count > $this->maxwordlimit) {
             return get_string(
                 'maxwordlimitboundary',
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 ['limit' => $this->maxwordlimit, 'count' => $count]
             );
         } else if ($count < $this->minwordlimit) {
             return get_string(
                 'minwordlimitboundary',
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 ['limit' => $this->minwordlimit, 'count' => $count]
             );
         } else {
@@ -1100,17 +1100,17 @@ class qtype_aitext_question extends question_graded_automatically {
         if ($this->maxwordlimit && $count > $this->maxwordlimit) {
             return get_string(
                 'wordcounttoomuch',
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 ['limit' => $this->maxwordlimit, 'count' => $count]
             );
         } else if ($count < $this->minwordlimit) {
             return get_string(
                 'wordcounttoofew',
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 ['limit' => $this->minwordlimit, 'count' => $count]
             );
         } else {
-            return get_string('wordcount', 'qtype_aitext', $count);
+            return get_string('wordcount', 'qtype_aitext_rubric', $count);
         }
     }
 

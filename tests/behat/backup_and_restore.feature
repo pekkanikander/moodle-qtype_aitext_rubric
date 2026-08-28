@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_backup_restore
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_backup_restore
 Feature: Test duplicating a quiz containing an aitext question
     As a teacher
     In order re-use my courses containing aitext questions
@@ -13,8 +13,8 @@ Feature: Test duplicating a quiz containing an aitext question
           | Course       | C1        | Test questions |
     And the following "questions" exist:
           | questioncategory | qtype  | name       | template |
-          | Test questions   | aitext | aitext-001 | editor   |
-          | Test questions   | aitext | aitext-002 | plain    |
+          | Test questions   | aitext_rubric | aitext-001 | editor   |
+          | Test questions   | aitext_rubric | aitext-002 | plain    |
     And the following "activities" exist:
           | activity | name      | course | idnumber |
           | quiz     | Test quiz | C1     | quiz1    |
@@ -32,7 +32,7 @@ Feature: Test duplicating a quiz containing an aitext question
   Scenario: Upload and restore an mbz backup Filename
     When I am on the "Course 1" "restore" page logged in as admin
     And I press "Manage course backups"
-    And I upload "question/type/aitext/tests/fixtures/aitext_english_quiz.mbz" file to "Files" filemanager
+    And I upload "question/type/aitext_rubric/tests/fixtures/aitext_english_quiz.mbz" file to "Files" filemanager
     And I press "Save changes"
     And I restore "aitext_english_quiz.mbz" backup into a new course using this options:
           | Schema | Course name | Restored course |

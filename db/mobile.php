@@ -19,7 +19,7 @@
  *
  * Documentation: {@link https://moodledev.io/general/app/development/plugins-development-guide}
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,12 +27,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 $addons = [
-    "qtype_aitext" => [
+    "qtype_aitext_rubric" => [
         "handlers" => [ // Different places where the add-on will display content.
-            'aitext' => [ // Handler unique name (can be anything).
+            'aitext_rubric' => [ // Handler unique name (can be anything).
                 'displaydata' => [
                     'title' => 'AIText question',
-                    'icon' => '/question/type/aitext/pix/icon.gif',
+                    'icon' => '/question/type/aitext_rubric/pix/icon.gif',
                     'class' => '',
                 ],
                 'delegate' => 'CoreQuestionDelegate', // Delegate (where to display the link to the add-on).
@@ -41,13 +41,13 @@ $addons = [
                     'mobile_get_aitext' => [], // Function in classes/output/mobile.php.
                 ], // Function needs caching for offline.
                 'styles' => [
-                    'url' => $CFG->wwwroot . '/question/type/aitext/mobile/qtype_aitext_app.css',
+                    'url' => $CFG->wwwroot . '/question/type/aitext_rubric/mobile/qtype_aitext_rubric_app.css',
                     'version' => '0.1',
                 ],
             ],
         ],
         'lang' => [
-                    ['pluginname', 'qtype_aitext'], // Matching value in  lang/en/qtype_gapfill.
+                    ['pluginname', 'qtype_aitext_rubric'], // Matching value in  lang/en/qtype_gapfill.
         ],
     ],
 ];

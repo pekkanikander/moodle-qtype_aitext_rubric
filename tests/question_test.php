@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext;
+namespace qtype_aitext_rubric;
 
 use coding_exception;
 use Exception;
@@ -26,19 +26,19 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
-require_once($CFG->dirroot . '/question/type/aitext/tests/helper.php');
-require_once($CFG->dirroot . '/question/type/aitext/questiontype.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/tests/helper.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/questiontype.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
 
-use qtype_aitext_test_helper;
+use qtype_aitext_rubric_test_helper;
 
 /**
  * Unit tests for the aitext question definition class.
  *
- * @package qtype_aitext
+ * @package qtype_aitext_rubric
  * @copyright 2025 Marcus Green
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \qtype_aitext
+ * @coversDefaultClass \qtype_aitext_rubric
  */
 final class question_test extends \advanced_testcase {
     /**
@@ -64,7 +64,7 @@ final class question_test extends \advanced_testcase {
      */
     protected function setUp(): void {
         parent::setUp();
-        $this->question = new \qtype_aitext();
+        $this->question = new \qtype_aitext_rubric();
         if (defined('TEST_LLM_APIKEY') && defined('TEST_LLM_ORGID')) {
             set_config('apikey', TEST_LLM_APIKEY, 'aiprovider_openai');
             set_config('orgid', TEST_LLM_ORGID, 'aiprovider_openai');
@@ -76,19 +76,19 @@ final class question_test extends \advanced_testcase {
     /**
      * Test the upgrade process that migrates sample answers from the old table structure to the new one.
      *
-     * @covers \qtype_aitext\db\upgrade
+     * @covers \qtype_aitext_rubric\db\upgrade
      * @return void
      */
     public function test_upgrade(): void {
         $this->resetAfterTest(true);
         global $DB;
         $aitext = ['questionid' => 1, 'sampleanswer' => 'sampleanswer'];
-        $DB->insert_record('qtype_aitext', $aitext);
+        $DB->insert_record('qtype_aitext_rubric', $aitext);
 
-        $sampleanswers = $DB->get_records('qtype_aitext', null, '', 'id,sampleanswer');
+        $sampleanswers = $DB->get_records('qtype_aitext_rubric', null, '', 'id,sampleanswer');
         foreach ($sampleanswers as $sampleanswer) {
                 $record = ['question' => $sampleanswer->id, 'response' => $sampleanswer->sampleanswer];
-                $DB->insert_record('qtype_aitext_sampleresponses', $record);
+                $DB->insert_record('qtype_aitext_rubric_sampleresponses', $record);
         }
     }
 
@@ -104,9 +104,9 @@ final class question_test extends \advanced_testcase {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category([]);
-        $question = $generator->create_question('aitext', 'editor', ['category' => $cat->id]);
+        $question = $generator->create_question('aitext_rubric', 'editor', ['category' => $cat->id]);
 
-        $formdata = \test_question_maker::get_question_form_data('aitext', 'editor');
+        $formdata = \test_question_maker::get_question_form_data('aitext_rubric', 'editor');
         $formdata->id = $question->id;
         $formdata->context = \context::instance_by_id($cat->contextid);
         $formdata->graderinfo = [
@@ -115,11 +115,11 @@ final class question_test extends \advanced_testcase {
             'itemid' => 0,
         ];
 
-        $qtype = \question_bank::get_qtype('aitext');
+        $qtype = \question_bank::get_qtype('aitext_rubric');
         $qtype->save_question_options($formdata);
 
         $options = $DB->get_record(
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             ['questionid' => $question->id],
             'graderinfo, graderinfoformat',
             MUST_EXIST
@@ -132,7 +132,7 @@ final class question_test extends \advanced_testcase {
      * Only designed to test the 4.5 subsystem when run locally
      * not when in GHA ci
      *
-     * @covers \qtype_aitext\question::perform_request
+     * @covers \qtype_aitext_rubric\question::perform_request
      * @return void
      */
     public function test_perform_request(): void {
@@ -140,7 +140,7 @@ final class question_test extends \advanced_testcase {
         if (!$this->islive) {
                 $this->markTestSkipped('No live connection to the AI system');
         }
-        $aitext = qtype_aitext_test_helper::make_aitext_question([]);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
         $aitext->questiontext = 'What is 2 * 4?';
         $response = $aitext->perform_request('What is 2 * 4 only return a single number');
         $this->assertEquals('8', $response);
@@ -158,7 +158,7 @@ final class question_test extends \advanced_testcase {
      */
     public function test_get_question_summary(): void {
             $this->resetAfterTest(true);
-            $aitext = qtype_aitext_test_helper::make_aitext_question([]);
+            $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
             $aitext->questiontext = 'Hello <img src="http://example.com/globe.png" alt="world" />';
             $this->assertEquals('Hello [world]', $aitext->get_question_summary());
     }
@@ -171,13 +171,13 @@ final class question_test extends \advanced_testcase {
      * 2. Expert mode - When aiprompt contains {{response}}, it becomes the template.
      * 3. Language handling - Tests [[language=XX]], [[language=""]], and translatepostfix.
      *
-     * @covers \qtype_aitext_question::build_full_ai_prompt
+     * @covers \qtype_aitext_rubric_question::build_full_ai_prompt
      */
     public function test_build_full_ai_prompt(): void {
         $this->resetAfterTest(true);
 
         // Setup common test data.
-        $question = qtype_aitext_test_helper::make_aitext_question([]);
+        $question = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
         $question->questiontext = 'Write a poem about nature';
         $studentresponse = 'The rain in Spain falls mainly on the plain';
         $markscheme = 'One mark for correct grammar';
@@ -188,12 +188,12 @@ final class question_test extends \advanced_testcase {
         $template = "=== ROLE ===\n{{role}}\n\n=== QUESTION ===\n{{questiontext}}\n\n" .
             "=== GRADING ===\n{{aiprompt}}\n\n=== SCORE ===\n{{markscheme}}\n\n" .
             "=== RESPONSE ===\n{{response}}\n\n=== LANGUAGE ===\n{{language}}";
-        set_config('prompttemplate', $template, 'qtype_aitext');
-        set_config('roleprompt', 'You are a helpful teacher.', 'qtype_aitext');
-        set_config('jsonprompt', 'Return JSON: {"feedback":"...","marks":N}', 'qtype_aitext');
+        set_config('prompttemplate', $template, 'qtype_aitext_rubric');
+        set_config('roleprompt', 'You are a helpful teacher.', 'qtype_aitext_rubric');
+        set_config('jsonprompt', 'Return JSON: {"feedback":"...","marks":N}', 'qtype_aitext_rubric');
 
         // Scenario 1: Standard mode with admin template.
-        set_config('translatepostfix', true, 'qtype_aitext');
+        set_config('translatepostfix', true, 'qtype_aitext_rubric');
         $aiprompt = 'Check if the poem has good imagery.';
         $result = $question->build_full_ai_prompt($studentresponse, $aiprompt, $defaultmark, $markscheme);
 
@@ -228,13 +228,13 @@ final class question_test extends \advanced_testcase {
 
         // Scenario 3b: Disabled translation via [[language=""]].
         $aiprompt = 'Rate the answer [[language=""]]';
-        set_config('translatepostfix', true, 'qtype_aitext');
+        set_config('translatepostfix', true, 'qtype_aitext_rubric');
         $result = $question->build_full_ai_prompt($studentresponse, $aiprompt, $defaultmark, $markscheme);
         $this->assertStringContainsString('the same language as the question', $result);
         $this->assertStringNotContainsString('[[language=""]]', $result);
 
         // Scenario 3c: translatepostfix disabled.
-        set_config('translatepostfix', false, 'qtype_aitext');
+        set_config('translatepostfix', false, 'qtype_aitext_rubric');
         $aiprompt = 'Simple grading instruction';
         $result = $question->build_full_ai_prompt($studentresponse, $aiprompt, $defaultmark, $markscheme);
         $this->assertStringContainsString('the same language as the question', $result);
@@ -243,16 +243,16 @@ final class question_test extends \advanced_testcase {
     /**
      * Test that an empty markscheme is handled correctly with fallback text.
      *
-     * @covers \qtype_aitext_question::build_full_ai_prompt
+     * @covers \qtype_aitext_rubric_question::build_full_ai_prompt
      */
     public function test_build_full_ai_prompt_empty_markscheme(): void {
         $this->resetAfterTest(true);
 
-        $question = qtype_aitext_test_helper::make_aitext_question([]);
+        $question = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
         $question->questiontext = 'Test question';
 
-        set_config('prompttemplate', '{{markscheme}}', 'qtype_aitext');
-        set_config('translatepostfix', false, 'qtype_aitext');
+        set_config('prompttemplate', '{{markscheme}}', 'qtype_aitext_rubric');
+        set_config('translatepostfix', false, 'qtype_aitext_rubric');
 
         $result = $question->build_full_ai_prompt('Student answer', 'Grade this', 10, '');
 
@@ -279,11 +279,11 @@ final class question_test extends \advanced_testcase {
         ?float $expectedmarks
     ): void {
         $this->resetAfterTest();
-        set_config('disclaimer', '(example disclaimer)', 'qtype_aitext');
-        set_config('translatepostfix', false, 'qtype_aitext');
+        set_config('disclaimer', '(example disclaimer)', 'qtype_aitext_rubric');
+        set_config('translatepostfix', false, 'qtype_aitext_rubric');
 
         $questiontext = 'AI question text';
-        $aitext = qtype_aitext_test_helper::make_aitext_question(['questiontext' => $questiontext, 'model' => 'llama3']);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question(['questiontext' => $questiontext, 'model' => 'llama3']);
 
         try {
             $processedfeedback = $aitext->process_feedback($json);
@@ -299,7 +299,7 @@ final class question_test extends \advanced_testcase {
         // Empty feedback returns the err_nofeedback system message without disclaimer.
         if (empty($json)) {
             $this->assertEquals(
-                get_string('err_nofeedback', 'qtype_aitext'),
+                get_string('err_nofeedback', 'qtype_aitext_rubric'),
                 $processedfeedback->feedback
             );
         } else {
@@ -332,10 +332,10 @@ final class question_test extends \advanced_testcase {
         string $expecteddisclaimer
     ): void {
         $this->resetAfterTest();
-        set_config('disclaimer', $disclaimer, 'qtype_aitext');
-        set_config('translatepostfix', false, 'qtype_aitext');
+        set_config('disclaimer', $disclaimer, 'qtype_aitext_rubric');
+        set_config('translatepostfix', false, 'qtype_aitext_rubric');
 
-        $aitext = qtype_aitext_test_helper::make_aitext_question(['model' => 'llama3']);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question(['model' => 'llama3']);
         // Simulate what perform_request() records after talking to the backend.
         $aitext->modelused = $modelused;
 
@@ -536,7 +536,7 @@ final class question_test extends \advanced_testcase {
 
         // Create the aitext question under test.
         $questiontext = 'AI question text';
-        $aitext = qtype_aitext_test_helper::make_aitext_question(['questiontext' => $questiontext]);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question(['questiontext' => $questiontext]);
         $aitext->start_attempt(new question_attempt_step(), 1);
 
         $aitext->responseformat = 'editor';
@@ -557,7 +557,7 @@ final class question_test extends \advanced_testcase {
     public function test_is_same_response(): void {
         $this->resetAfterTest();
 
-        $aitext = qtype_aitext_test_helper::make_aitext_question([]);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
 
         $aitext->responsetemplate = '';
 
@@ -617,7 +617,7 @@ final class question_test extends \advanced_testcase {
      */
     public function test_is_same_response_with_template(): void {
         $this->resetAfterTest();
-        $aitext = qtype_aitext_test_helper::make_aitext_question([]);
+        $aitext = qtype_aitext_rubric_test_helper::make_aitext_rubric_question([]);
 
         $aitext->responsetemplate = 'Once upon a time';
 
@@ -689,7 +689,7 @@ final class question_test extends \advanced_testcase {
         $questioncategory = $questiongenerator->create_question_category([
             'contextid' => $qbankcontext->id,
         ]);
-        $questionrecord = $questiongenerator->create_question('aitext', 'editor', [
+        $questionrecord = $questiongenerator->create_question('aitext_rubric', 'editor', [
             'category' => $questioncategory->id,
         ]);
 
@@ -746,7 +746,7 @@ final class question_test extends \advanced_testcase {
         $questioncategory = $questiongenerator->create_question_category([
             'contextid' => \context_course::instance($course->id)->id,
         ]);
-        $questionrecord = $questiongenerator->create_question('aitext', 'editor', [
+        $questionrecord = $questiongenerator->create_question('aitext_rubric', 'editor', [
             'category' => $questioncategory->id,
         ]);
         $aitext = \question_bank::load_question($questionrecord->id);
@@ -790,7 +790,7 @@ final class question_test extends \advanced_testcase {
         $questioncategory = $questiongenerator->create_question_category([
             'contextid' => $qbankcontext->id,
         ]);
-        $questionrecord = $questiongenerator->create_question('aitext', 'editor', [
+        $questionrecord = $questiongenerator->create_question('aitext_rubric', 'editor', [
             'category' => $questioncategory->id,
         ]);
         $aitext = \question_bank::load_question($questionrecord->id);

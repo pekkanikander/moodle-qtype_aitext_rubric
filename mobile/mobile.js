@@ -45,7 +45,7 @@ var result = {
         var textarea = div.querySelector('.answer textarea');
         if (textarea === null) {
             // Review or check.
-            textarea = div.querySelector('.answer .qtype_aitext_response');
+            textarea = div.querySelector('.answer .qtype_aitext_rubric_response');
         }
         if (textarea) {
             textarea.style.borderRadius = '4px';
@@ -87,8 +87,8 @@ var result = {
 
                 // Maybe "this.CoreLangProvider" has a method for fetching a string
                 // but I can't find it, so we use our own method, thus:
-                var minwordswarning = that.getPluginString("qtype_aitext", "minwordswarning");
-                var maxwordswarning = that.getPluginString("qtype_aitext", "maxwordswarning");
+                var minwordswarning = that.getPluginString("qtype_aitext_rubric", "minwordswarning");
+                var maxwordswarning = that.getPluginString("qtype_aitext_rubric", "maxwordswarning");
 
                 var countitems = itemcount.querySelector(".countitems");
                 var value = countitems.querySelector(".value");

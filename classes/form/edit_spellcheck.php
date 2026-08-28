@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext\form;
+namespace qtype_aitext_rubric\form;
 
 use context;
 use context_module;
@@ -25,7 +25,7 @@ use question_engine;
 /**
  * From for editing a card.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2024 ISB Bayern
  * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +44,7 @@ class edit_spellcheck extends dynamic_form {
         $mform->addElement('hidden', 'questionattemptid');
         $mform->setType('questionattemptid', PARAM_INT);
 
-        $mform->addElement('static', 'student_answer', get_string('spellcheck_student_anser_desc', 'qtype_aitext'));
+        $mform->addElement('static', 'student_answer', get_string('spellcheck_student_anser_desc', 'qtype_aitext_rubric'));
         $mform->setType('student_answer', PARAM_RAW);
 
         $editoroptions = [
@@ -55,7 +55,7 @@ class edit_spellcheck extends dynamic_form {
         $mform->addElement(
             'editor',
             'spellcheck_editor',
-            get_string('spellcheck_editor_desc', 'qtype_aitext'),
+            get_string('spellcheck_editor_desc', 'qtype_aitext_rubric'),
             null,
             $editoroptions,
         );

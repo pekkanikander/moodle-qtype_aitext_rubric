@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext\local;
+namespace qtype_aitext_rubric\local;
 
 /**
  * A criterion-referenced rubric for AI grading, and the validation of
  * model responses against it.
  *
- * The rubric is authored as JSON (one TEXT column on {qtype_aitext}):
+ * The rubric is authored as JSON (one TEXT column on {qtype_aitext_rubric}):
  *
  *   {
  *     "language": "fi",
@@ -56,7 +56,7 @@ namespace qtype_aitext\local;
  * InvalidArgumentException; model-response errors throw RuntimeException.
  * Both messages are for logs and question authors, never for students.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2026 Pekka Nikander
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_export
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_export
 Feature: Test exporting aitext questions
     As a teacher
     In order to be able to reuse my aitext questions
@@ -19,9 +19,9 @@ Feature: Test exporting aitext questions
         | Course       | C1        | Test questions |
     And the following "questions" exist:
         | questioncategory | qtype  | name       | template |
-        | Test questions   | aitext | aitext-001 | editor   |
-        # | Test questions   | aitext | aitext-002 | editorfilepicker |
-        | Test questions | aitext | aitext-003 | plain |
+        | Test questions   | aitext_rubric | aitext-001 | editor   |
+        # | Test questions   | aitext_rubric | aitext-002 | editorfilepicker |
+        | Test questions | aitext_rubric | aitext-003 | plain |
 
   Scenario: Export 3 aitext questions
     When I am on the "Course 1" "core_question > course question export" page logged in as teacher

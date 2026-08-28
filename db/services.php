@@ -17,7 +17,7 @@
 /**
  * Aitext services definition
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  Justin Hunt - poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,14 +25,14 @@
 /**
  * External class.
  *
- * @package qtype_aitext
+ * @package qtype_aitext_rubric
  * @author  Justin Hunt - poodll.com
  */
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-        'qtype_aitext_fetch_ai_grade' => [
-                'classname'   => 'qtype_aitext_external',
+        'qtype_aitext_rubric_fetch_ai_grade' => [
+                'classname'   => 'qtype_aitext_rubric_external',
                 'methodname'  => 'fetch_ai_grade',
                 'description' => 'checks a response with the AI grader',
                 'capabilities' => 'mod/quiz:grade',

@@ -14,22 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace qtype_aitext;
+namespace qtype_aitext_rubric;
 
 use PHPUnit\Framework\ExpectationFailedException;
-use qtype_aitext;
+use qtype_aitext_rubric;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/question/type/aitext/questiontype.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/questiontype.php');
 
 
 /**
  * Unit tests for the aitext question type class.
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  Marcus Green 2025
  * @author     Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +44,7 @@ final class question_type_test extends \advanced_testcase {
 
     protected function setUp(): void {
         parent::setUp();
-        $this->qtype = new qtype_aitext();
+        $this->qtype = new qtype_aitext_rubric();
     }
 
     protected function tearDown(): void {
@@ -74,7 +74,7 @@ final class question_type_test extends \advanced_testcase {
      * @throws ExpectationFailedException
      */
     public function test_name(): void {
-        $this->assertEquals($this->qtype->name(), 'aitext');
+        $this->assertEquals($this->qtype->name(), 'aitext_rubric');
     }
     /**
      * Does can_analyse_response work (it will always be false for this qtype)
@@ -114,7 +114,7 @@ final class question_type_test extends \advanced_testcase {
 
     /**
      * Deleting a question must also delete its sample responses so no orphan
-     * rows are left behind in qtype_aitext_sampleresponses.
+     * rows are left behind in qtype_aitext_rubric_sampleresponses.
      *
      * @covers ::delete_question()
      *
@@ -128,22 +128,22 @@ final class question_type_test extends \advanced_testcase {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $category = $generator->create_question_category();
         // The 'editor' fixture ships one sample response ('response1').
-        $question = $generator->create_question('aitext', 'editor', ['category' => $category->id]);
+        $question = $generator->create_question('aitext_rubric', 'editor', ['category' => $category->id]);
 
         // Sanity check: the options row and one sample response row exist.
-        $this->assertTrue($DB->record_exists('qtype_aitext', ['questionid' => $question->id]));
+        $this->assertTrue($DB->record_exists('qtype_aitext_rubric', ['questionid' => $question->id]));
         $this->assertEquals(
             1,
-            $DB->count_records('qtype_aitext_sampleresponses', ['question' => $question->id])
+            $DB->count_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id])
         );
 
         $this->qtype->delete_question($question->id, $category->contextid);
 
         // Both the options row and the sample response rows must be gone.
-        $this->assertFalse($DB->record_exists('qtype_aitext', ['questionid' => $question->id]));
+        $this->assertFalse($DB->record_exists('qtype_aitext_rubric', ['questionid' => $question->id]));
         $this->assertEquals(
             0,
-            $DB->count_records('qtype_aitext_sampleresponses', ['question' => $question->id])
+            $DB->count_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id])
         );
     }
 
@@ -158,24 +158,24 @@ final class question_type_test extends \advanced_testcase {
      */
     public function test_save_question_options_no_duplicate_sampleresponses(): void {
         global $DB, $CFG;
-        require_once($CFG->dirroot . '/question/type/aitext/tests/helper.php');
+        require_once($CFG->dirroot . '/question/type/aitext_rubric/tests/helper.php');
         $this->resetAfterTest();
         $this->setAdminUser();
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $category = $generator->create_question_category();
         // The 'editor' fixture ships one sample response ('response1').
-        $question = $generator->create_question('aitext', 'editor', ['category' => $category->id]);
+        $question = $generator->create_question('aitext_rubric', 'editor', ['category' => $category->id]);
 
         $this->assertEquals(
             1,
-            $DB->count_records('qtype_aitext_sampleresponses', ['question' => $question->id])
+            $DB->count_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id])
         );
 
         // Build form data for a re-save of the same question record. Two real
         // sample responses plus a blank one that must be skipped.
-        $helper = new \qtype_aitext_test_helper();
-        $formdata = $helper->get_aitext_question_form_data_editor();
+        $helper = new \qtype_aitext_rubric_test_helper();
+        $formdata = $helper->get_aitext_rubric_question_form_data_editor();
         $formdata->id = $question->id;
         $formdata->context = \context::instance_by_id($category->contextid);
         $formdata->sampleresponses = ['first response', 'second response', '   '];
@@ -185,14 +185,14 @@ final class question_type_test extends \advanced_testcase {
         // Exactly two rows: no duplication of the original, blank entry skipped.
         $this->assertEquals(
             2,
-            $DB->count_records('qtype_aitext_sampleresponses', ['question' => $question->id])
+            $DB->count_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id])
         );
 
         // Saving again with the same data keeps the count stable.
         $this->qtype->save_question_options($formdata);
         $this->assertEquals(
             2,
-            $DB->count_records('qtype_aitext_sampleresponses', ['question' => $question->id])
+            $DB->count_records('qtype_aitext_rubric_sampleresponses', ['question' => $question->id])
         );
     }
 }

@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template qtype_aitext/rubric_feedback
+    @template qtype_aitext_rubric/rubric_feedback
 
     Criterion-referenced AI feedback, rendered at grading time.
 
@@ -25,7 +25,7 @@
     The display mode (none/coarse/fine) arrives precomputed as the
     showbadge/showpoints/showtotal booleans.
 
-    Context (see qtype_aitext_question::export_rubric_feedback()):
+    Context (see qtype_aitext_rubric_question::export_rubric_feedback()):
     {
         "banner": "The assessment below was made by AI (claude-sonnet-4-5) and can be wrong.",
         "criteria": [
@@ -48,19 +48,19 @@
         "totallabel": "Pisteet:"
     }
 }}
-<div class="qtype_aitext-rubric">
-    <div class="qtype_aitext-rubric-banner">{{banner}}</div>
+<div class="qtype_aitext_rubric-rubric">
+    <div class="qtype_aitext_rubric-rubric-banner">{{banner}}</div>
     {{#criteria}}
-    <div class="qtype_aitext-rubric-criterion">
-        <div class="qtype_aitext-rubric-head">
-            <span class="qtype_aitext-rubric-title">{{title}}</span>
-            {{#showbadge}}<span class="qtype_aitext-rubric-badge qtype_aitext-rubric-badge-{{badge}}">{{badgelabel}}</span>{{/showbadge}}
-            {{#showpoints}}<span class="qtype_aitext-rubric-points">{{points}} / {{max}}</span>{{/showpoints}}
+    <div class="qtype_aitext_rubric-rubric-criterion">
+        <div class="qtype_aitext_rubric-rubric-head">
+            <span class="qtype_aitext_rubric-rubric-title">{{title}}</span>
+            {{#showbadge}}<span class="qtype_aitext_rubric-rubric-badge qtype_aitext_rubric-rubric-badge-{{badge}}">{{badgelabel}}</span>{{/showbadge}}
+            {{#showpoints}}<span class="qtype_aitext_rubric-rubric-points">{{points}} / {{max}}</span>{{/showpoints}}
         </div>
-        <div class="qtype_aitext-rubric-descriptor">{{descriptor}}</div>
+        <div class="qtype_aitext_rubric-rubric-descriptor">{{descriptor}}</div>
         {{#hasevidence}}
-        <div class="qtype_aitext-rubric-evidence">
-            <span class="qtype_aitext-rubric-label">{{evidencelabel}}</span>
+        <div class="qtype_aitext_rubric-rubric-evidence">
+            <span class="qtype_aitext_rubric-rubric-label">{{evidencelabel}}</span>
             <ul>
                 {{#evidence}}
                 <li>&#8220;{{.}}&#8221;</li>
@@ -69,17 +69,17 @@
         </div>
         {{/hasevidence}}
         {{#comment}}
-        <div class="qtype_aitext-rubric-comment"><span class="qtype_aitext-rubric-label">{{ailabel}}</span> {{comment}}</div>
+        <div class="qtype_aitext_rubric-rubric-comment"><span class="qtype_aitext_rubric-rubric-label">{{ailabel}}</span> {{comment}}</div>
         {{/comment}}
         {{#next}}
-        <div class="qtype_aitext-rubric-next"><span class="qtype_aitext-rubric-label">{{nextlabel}}</span> {{next}}</div>
+        <div class="qtype_aitext_rubric-rubric-next"><span class="qtype_aitext_rubric-rubric-label">{{nextlabel}}</span> {{next}}</div>
         {{/next}}
     </div>
     {{/criteria}}
     {{#nextstep}}
-    <div class="qtype_aitext-rubric-nextstep"><span class="qtype_aitext-rubric-label">{{nextsteplabel}}</span> {{nextstep}}</div>
+    <div class="qtype_aitext_rubric-rubric-nextstep"><span class="qtype_aitext_rubric-rubric-label">{{nextsteplabel}}</span> {{nextstep}}</div>
     {{/nextstep}}
     {{#showtotal}}
-    <div class="qtype_aitext-rubric-total">{{totallabel}} {{points}} / {{maxpoints}}</div>
+    <div class="qtype_aitext_rubric-rubric-total">{{totallabel}} {{points}} / {{maxpoints}}</div>
     {{/showtotal}}
 </div>

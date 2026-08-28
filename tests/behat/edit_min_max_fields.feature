@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_max_min
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_max_min
 Feature: In an AI Text question, let the question author choose the min/max number of words for input text
     In order to constrain student submissions for marking
     As a teacher
@@ -19,7 +19,7 @@ Feature: In an AI Text question, let the question author choose the min/max numb
         | Course       | C1        | Test questions |
     And the following "questions" exist:
         | questioncategory | qtype  | name           | template | minwordlimit | maxwordlimit |
-        | Test questions   | aitext | aitext-min-max | editor   | 0            | 0            |
+        | Test questions   | aitext_rubric | aitext-min-max | editor   | 0            | 0            |
 
   Scenario: Minimum/Maximum word limit are enabled but not set.
     When I am on the "aitext-min-max" "core_question > edit" page logged in as teacher

@@ -17,8 +17,8 @@
 /**
  * Based on core Moodle qtype_essay originating at the UK Open University
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext_format_plain_renderer extends qtype_aitext_format_renderer_base {
+class qtype_aitext_rubric_format_plain_renderer extends qtype_aitext_rubric_format_renderer_base {
     /**
      * Where the student keys in the response
      *
@@ -39,7 +39,7 @@ class qtype_aitext_format_plain_renderer extends qtype_aitext_format_renderer_ba
      * @return string
      */
     protected function textarea($response, $lines, $attributes) {
-        $attributes['class'] = $this->class_name() . ' qtype_aitext_response form-control';
+        $attributes['class'] = $this->class_name() . ' qtype_aitext_rubric_response form-control';
         $attributes['rows'] = $lines;
         $attributes['cols'] = 60;
         return html_writer::tag('textarea', s($response), $attributes);
@@ -51,7 +51,7 @@ class qtype_aitext_format_plain_renderer extends qtype_aitext_format_renderer_ba
      * @return string
      */
     protected function class_name() {
-        return 'qtype_aitext_plain';
+        return 'qtype_aitext_rubric_plain';
     }
 
     /**
@@ -88,7 +88,7 @@ class qtype_aitext_format_plain_renderer extends qtype_aitext_format_renderer_ba
         $inputname = $qa->get_qt_field_name($name);
         $id = $inputname . '_id';
 
-        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext'));
+        $responselabel = $this->displayoptions->add_question_identifier_to_label(get_string('answertext', 'qtype_aitext_rubric'));
         $output = html_writer::tag('label', $responselabel, ['class' => 'visually-hidden', 'for' => $id]);
         $output .= $this->textarea($step->get_qt_var($name), $lines, ['name' => $inputname, 'id' => $id]);
         $output .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => $inputname . 'format', 'value' => FORMAT_PLAIN]);

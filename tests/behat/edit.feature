@@ -1,4 +1,4 @@
-@qtype @qtype_aitext @qtype_aitext_edit
+@qtype @qtype_aitext_rubric @qtype_aitext_rubric_edit
 Feature: Test editing an AI Text question
     As a teacher
     In order to be able to update my aitext question
@@ -19,8 +19,8 @@ Feature: Test editing an AI Text question
           | Course       | C1        | Test questions |
     And the following "questions" exist:
           | questioncategory | qtype  | name       | template |
-          | Test questions   | aitext | aitext-001 | editor   |
-          | Test questions   | aitext | aitext-002 | plain    |
+          | Test questions   | aitext_rubric | aitext-001 | editor   |
+          | Test questions   | aitext_rubric | aitext-002 | plain    |
   @javascript
   Scenario: Edit an aitext question
     When I am on the "Course 1" "core_question > course question bank" page logged in as teacher

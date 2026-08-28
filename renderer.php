@@ -17,18 +17,18 @@
 /**
  * Based on core Moodle qtype_essay originating at the UK Open University
  *
- * @package    qtype_aitext
- * @subpackage aitext
+ * @package    qtype_aitext_rubric
+ * @subpackage aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/aitext/format_base_renderer.php');
-require_once($CFG->dirroot . '/question/type/aitext/format_editor_renderer.php');
-require_once($CFG->dirroot . '/question/type/aitext/format_plain_renderer.php');
-require_once($CFG->dirroot . '/question/type/aitext/format_monospaced_renderer.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/format_base_renderer.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/format_editor_renderer.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/format_plain_renderer.php');
+require_once($CFG->dirroot . '/question/type/aitext_rubric/format_monospaced_renderer.php');
 
 /**
  * Generates the output for aitext questions.
@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/question/type/aitext/format_monospaced_renderer.p
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_aitext_renderer extends qtype_renderer {
+class qtype_aitext_rubric_renderer extends qtype_renderer {
     /**
      * Generate the display of the formulation part of the question shown at runtime
      * in a quiz
@@ -51,10 +51,10 @@ class qtype_aitext_renderer extends qtype_renderer {
     ) {
         global $CFG, $USER;
 
-        /** @var qtype_aitext_question $question */
+        /** @var qtype_aitext_rubric_question $question */
         $question = $qa->get_question();
 
-        /** @var qtype_aitext_format_renderer_base $responseoutput */
+        /** @var qtype_aitext_rubric_format_renderer_base $responseoutput */
         $responseoutput = $question->get_format_renderer($this->page);
         $responseoutput->set_displayoptions($options);
 
@@ -99,7 +99,7 @@ class qtype_aitext_renderer extends qtype_renderer {
 
         $result = '';
         $uniqid = uniqid();
-        if (get_config('qtype_aitext', 'backend') === 'local_ai_manager') {
+        if (get_config('qtype_aitext_rubric', 'backend') === 'local_ai_manager') {
             $result .= html_writer::tag(
                 'div',
                 '',
@@ -108,7 +108,7 @@ class qtype_aitext_renderer extends qtype_renderer {
             $this->page->requires->js_call_amd(
                 'local_ai_manager/infobox',
                 'renderInfoBox',
-                ['qtype_aitext', $USER->id, '[data-content="local_ai_manager_infobox"][data-boxid="' . $uniqid . '"]',
+                ['qtype_aitext_rubric', $USER->id, '[data-content="local_ai_manager_infobox"][data-boxid="' . $uniqid . '"]',
                 ['feedback']]
             );
         }
@@ -147,7 +147,7 @@ class qtype_aitext_renderer extends qtype_renderer {
             $result .= $this->add_spellchecked_response_container($qa, $options->context, $uniqid);
         }
 
-        if (get_config('qtype_aitext', 'backend') === 'local_ai_manager') {
+        if (get_config('qtype_aitext_rubric', 'backend') === 'local_ai_manager') {
             $result .= html_writer::tag(
                 'div',
                 '',
@@ -219,7 +219,7 @@ class qtype_aitext_renderer extends qtype_renderer {
         if ($this->page->pagetype === 'question-bank-previewquestion-preview') {
             // Ensure $comment is an array and has content.
             if (!empty($comment)) {
-                $this->page->requires->js_call_amd('qtype_aitext/showprompt', 'init', []);
+                $this->page->requires->js_call_amd('qtype_aitext_rubric/showprompt', 'init', []);
 
                 $prompt = $qa->get_last_behaviour_var('_aiprompt');
 
@@ -230,7 +230,7 @@ class qtype_aitext_renderer extends qtype_renderer {
                 ]);
 
                 $showprompt  = '<br /><button id="showprompt" class="rounded">';
-                $showprompt .= get_string('showprompt', 'qtype_aitext') . '</button>';
+                $showprompt .= get_string('showprompt', 'qtype_aitext_rubric') . '</button>';
                 $showprompt .= '<div id="fullprompt" class="hidden">' . $prompt . '</div>';
 
                 // Store the modified feedback in a variable.
@@ -269,7 +269,7 @@ class qtype_aitext_renderer extends qtype_renderer {
                 $question->graderinfo,
                 $question->graderinfoformat,
                 $qa,
-                'qtype_aitext',
+                'qtype_aitext_rubric',
                 'graderinfo',
                 $question->id
             ),
@@ -279,10 +279,10 @@ class qtype_aitext_renderer extends qtype_renderer {
         // Show AI-generated feedback as a reference for the grader.
         $aicomment = $qa->get_last_behaviour_var('_comment');
         if (!empty($aicomment)) {
-            $heading = get_string('aifeedbackforgrader', 'qtype_aitext');
+            $heading = get_string('aifeedbackforgrader', 'qtype_aitext_rubric');
             $helpicon = $this->output->help_icon(
                 'aifeedbackforgrader',
-                'qtype_aitext'
+                'qtype_aitext_rubric'
             );
 
             $output .= html_writer::start_tag(
@@ -326,9 +326,9 @@ class qtype_aitext_renderer extends qtype_renderer {
         $spellcheckedresponse = $this->get_spellchecked_response($qa);
         $response = $this->get_plain_text_response($qa);
         // Lib to display the spellcheck diff.
-        $this->page->requires->js_call_amd('qtype_aitext/diff');
+        $this->page->requires->js_call_amd('qtype_aitext_rubric/diff');
         $this->page->requires->js_call_amd(
-            'qtype_aitext/spellcheck',
+            'qtype_aitext_rubric/spellcheck',
             'init',
             ['#' . $spellcheckareaid, '#' . $spellcheckeditbuttonid]
         );
@@ -347,7 +347,7 @@ class qtype_aitext_renderer extends qtype_renderer {
 
         $togglelink = html_writer::link(
             '#' . $collapseid,
-            $expandedicon . $collapsedicon . get_string('spellchecktoggle', 'qtype_aitext'),
+            $expandedicon . $collapsedicon . get_string('spellchecktoggle', 'qtype_aitext_rubric'),
             [
                 'data-bs-toggle' => 'collapse',
                 'aria-expanded' => 'true',
@@ -368,7 +368,7 @@ class qtype_aitext_renderer extends qtype_renderer {
 
         $divoptions = [];
         $divoptions['id'] = $spellcheckareaid;
-        $divoptions['data-content'] = 'qtype_aitext_spellcheck';
+        $divoptions['data-content'] = 'qtype_aitext_rubric_spellcheck';
         $divoptions['data-spellcheck'] = $spellcheckedresponse;
         $divoptions['data-questionattemptid'] = $qa->get_database_id() ?? '';
         $divoptions['data-answer'] = $response;
@@ -388,9 +388,9 @@ class qtype_aitext_renderer extends qtype_renderer {
                 'button',
                 $this->output->pix_icon(
                     'i/edit',
-                    get_string('spellcheckedit', 'qtype_aitext'),
+                    get_string('spellcheckedit', 'qtype_aitext_rubric'),
                     'moodle'
-                ) . " " . get_string('spellcheckedit', 'qtype_aitext'),
+                ) . " " . get_string('spellcheckedit', 'qtype_aitext_rubric'),
                 $btnoptions
             );
         }

@@ -17,7 +17,7 @@
 /**
  * Aitext backup
  *
- * @package    qtype_aitext
+ * @package    qtype_aitext_rubric
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,14 +29,14 @@
  * @copyright  2024 Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_qtype_aitext_plugin extends backup_qtype_plugin {
+class backup_qtype_aitext_rubric_plugin extends backup_qtype_plugin {
     /**
      * returns the name of the plugin/question type
      *
      * @return string
      */
     protected static function qtype_name() {
-        return 'aitext';
+        return 'aitext_rubric';
     }
 
     /**
@@ -45,7 +45,7 @@ class backup_qtype_aitext_plugin extends backup_qtype_plugin {
     protected function define_question_plugin_structure() {
 
         // Define the virtual plugin element with the condition to fulfill.
-            $plugin = $this->get_plugin_element(null, '../../qtype', 'aitext');
+            $plugin = $this->get_plugin_element(null, '../../qtype', 'aitext_rubric');
 
         // Create one standard named plugin element (the visible container).
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
@@ -55,7 +55,7 @@ class backup_qtype_aitext_plugin extends backup_qtype_plugin {
 
         // Now create the qtype own structures.
 
-        $aitext = new backup_nested_element('aitext', ['id'], [
+        $aitext = new backup_nested_element('aitext_rubric', ['id'], [
                 'aiprompt', 'markscheme', 'sampleanswer', 'responseformat', 'responsefieldlines', 'minwordlimit', 'maxwordlimit',
                 'graderinfo', 'graderinfoformat', 'responsetemplate', 'model',
                 'responsetemplateformat', 'maxbytes', 'spellcheck', 'rubric', 'scaffold', 'scaffoldlevel']);
@@ -71,13 +71,13 @@ class backup_qtype_aitext_plugin extends backup_qtype_plugin {
 
         // Set source to populate the data.
         $aitext->set_source_table(
-            'qtype_aitext',
+            'qtype_aitext_rubric',
             ['questionid' => backup::VAR_PARENTID]
         );
 
         // Set source to populate the data.
         $sampleresponse->set_source_table(
-            'qtype_aitext_sampleresponses',
+            'qtype_aitext_rubric_sampleresponses',
             ['question' => backup::VAR_PARENTID]
         );
 
