@@ -64,7 +64,12 @@ Upstream is fetched and merged weekly by a scheduled workflow. The
 component rename is re-applied to merged code by the idempotent
 `tools/rename-from-upstream.sh`.
 
-Changelog: [changelog.md](changelog.md)
+## Documentation
+
+- [docs/rubric-design.md](docs/rubric-design.md) — design rationale for the
+  rubric: why criterion-referenced, what the model is and is not asked to do,
+  how feedback is rendered.
+- [changelog.md](changelog.md)
 
 ## License
 
