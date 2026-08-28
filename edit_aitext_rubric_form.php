@@ -150,7 +150,12 @@ class qtype_aitext_rubric_edit_form extends question_edit_form {
         $evaloptions = ['cols' => 50, 'rows' => 5, 'disabled' => 'disabled' ];
         $repeatarray = [
             $mform->createElement('static', 'spinner', '', '<div class =" col-md-9" id="id_spinner"></div>'),
-            $mform->createElement('textarea', 'sampleresponses', get_string('sampleresponse', 'qtype_aitext_rubric'), $answeroptions),
+            $mform->createElement(
+                'textarea',
+                'sampleresponses',
+                get_string('sampleresponse', 'qtype_aitext_rubric'),
+                $answeroptions
+            ),
             // Wrap the evaluation output in the same grid column width as Moodle form items (label + element pattern).
             $mform->createElement(
                 'html',

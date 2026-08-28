@@ -127,7 +127,8 @@ class rubric {
         $count = count($data->criteria);
         if ($count < self::MIN_CRITERIA || $count > self::MAX_CRITERIA) {
             throw new \InvalidArgumentException(
-                'rubric needs ' . self::MIN_CRITERIA . '-' . self::MAX_CRITERIA . " criteria, got {$count}");
+                'rubric needs ' . self::MIN_CRITERIA . '-' . self::MAX_CRITERIA . " criteria, got {$count}"
+            );
         }
 
         $criteria = [];
@@ -149,10 +150,13 @@ class rubric {
                 throw new \InvalidArgumentException("criterion '{$id}': title is required");
             }
             $levels = $criterion->levels ?? null;
-            if (!is_array($levels)
-                    || count($levels) < self::MIN_LEVELS || count($levels) > self::MAX_LEVELS) {
+            if (
+                !is_array($levels)
+                    || count($levels) < self::MIN_LEVELS || count($levels) > self::MAX_LEVELS
+            ) {
                 throw new \InvalidArgumentException(
-                    "criterion '{$id}': needs " . self::MIN_LEVELS . '-' . self::MAX_LEVELS . ' levels');
+                    "criterion '{$id}': needs " . self::MIN_LEVELS . '-' . self::MAX_LEVELS . ' levels'
+                );
             }
             foreach ($levels as $j => $level) {
                 if (!is_string($level) || trim($level) === '') {
@@ -207,11 +211,13 @@ class rubric {
     public static function screen_answer(string $answer): void {
         if (mb_strlen($answer) > self::MAX_ANSWER_LENGTH) {
             throw new \RuntimeException(
-                'student answer is longer than ' . self::MAX_ANSWER_LENGTH . ' characters');
+                'student answer is longer than ' . self::MAX_ANSWER_LENGTH . ' characters'
+            );
         }
         if (str_contains($answer, '===')) {
             throw new \RuntimeException(
-                'student answer contains the section-marker sequence "==="');
+                'student answer contains the section-marker sequence "==="'
+            );
         }
     }
 
@@ -346,7 +352,8 @@ class rubric {
             }
             if (!is_int($level) || $level < 0 || $level > $maxlevel) {
                 throw new \RuntimeException(
-                    "criterion '{$criterion->id}': level must be an integer 0-{$maxlevel}");
+                    "criterion '{$criterion->id}': level must be an integer 0-{$maxlevel}"
+                );
             }
 
             $evidence = $item->evidence ?? [];
@@ -362,12 +369,14 @@ class rubric {
                 }
                 if (!str_contains($normalisedanswer, self::normalise($quote))) {
                     throw new \RuntimeException(
-                        "criterion '{$criterion->id}': evidence quote is not found in the student answer");
+                        "criterion '{$criterion->id}': evidence quote is not found in the student answer"
+                    );
                 }
             }
             if ($level > 0 && count($evidence) === 0) {
                 throw new \RuntimeException(
-                    "criterion '{$criterion->id}': level {$level} awarded without evidence");
+                    "criterion '{$criterion->id}': level {$level} awarded without evidence"
+                );
             }
 
             $comment = $item->comment ?? '';
