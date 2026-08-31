@@ -31,6 +31,6 @@ $plugin->release = '0.1.0';
 $plugin->supported = [405, 502];
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->dependencies = [
-    'qbehaviour_deferred_for_aitext' => 2026050500,
-    'qbehaviour_immediate_for_aitext' => 2026050500,
+    'qbehaviour_deferred_for_aitext' => ANY_VERSION,
+    'qbehaviour_immediate_for_aitext' => ANY_VERSION,
 ];
