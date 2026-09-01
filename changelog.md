@@ -1,5 +1,13 @@
 ### Moodle AI Text Rubric question type
 
+## Release 0.1.1 Sep 2026
+
+Rebased onto upstream `qtype_aitext` main, which loosens the two companion
+behaviour dependencies from a pinned version to `ANY_VERSION`, so the
+behaviour forks no longer have to track a qtype release number.
+
+Adds `docs/rubric-design.md`, the rationale for the rubric grading design.
+
 ## Release 0.1.0 Aug 2026
 
 First release of `qtype_aitext_rubric`, a hard fork of
